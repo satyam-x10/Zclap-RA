@@ -1,0 +1,44 @@
+.homepage-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    flex-direction: row;
+  }
+  
+  .half-container {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+  .next {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 1.3rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .next:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsive for tab: stack top-bottom */
+  @media (max-width: 768px) {
+    .homepage-container {
+      flex-direction: column;
+    }
+  
+    .half-container {
+      height: 50vh;
+    }
+  }
+  

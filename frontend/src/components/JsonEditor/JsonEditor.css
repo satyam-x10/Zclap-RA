@@ -1,0 +1,79 @@
+.json-editor-container {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 0 0 1px #333;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  /* width: 50vw; */
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.editor-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  background-color: #2d2d2d;
+  color: #cccccc;
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: #3b3b3b;
+  color: #fff;
+  border-color: #666;
+}
+
+.editor-content {
+  flex: 1;
+  border: 1px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.editor-footer {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #999;
+  align-items: center;
+}
+
+.editor-footer.error {
+  color: #ff6464;
+}
+
+.status-text {
+  font-weight: bold;
+}
+
+.json-stats {
+  opacity: 0.8;
+}
+
+.error-icon {
+  margin-right: 0.5rem;
+}
