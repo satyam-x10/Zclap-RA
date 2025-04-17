@@ -17,30 +17,59 @@ agent_manifest = {
 
 import numpy as np
 import cv2
+import torch
+from sklearn.metrics.pairwise import cosine_similarity
 
 async def run(input_data: dict) -> dict:
+    frames = input_data.get("video_frames", [])
     motion_vectors = input_data.get("motion_vectors", [])
-    if not motion_vectors:
-        raise ValueError("Missing input: 'motion_vectors'")
+    embeddings = input_data.get("visual_embeddings", [])
+    object_tags = input_data.get("object_tags", [])
 
-    # Convert to plain float array
-    mv = np.array([float(m) for m in motion_vectors])
+    # print("Input Data:", input_data)
 
-    # Normalize & invert: Lower motion = smoother → higher score
-    max_mv = np.max(mv) if len(mv) > 0 else 1.0
-    norm_mv = mv / max_mv
-    score = 1.0 - np.mean(norm_mv)
+    if not frames or not motion_vectors or not embeddings:
+        raise ValueError("Missing one or more required inputs: 'video_frames', 'motion_vectors', 'visual_embeddings'")
 
-    # Clamp to [0, 1]
-    score = max(0.0, min(1.0, round(score, 4)))
+    # Temporal Coherence (using cosine similarity of embeddings)
+    emb_array = np.array(embeddings)
+    similarities = [cosine_similarity([emb_array[i]], [emb_array[i+1]])[0][0] for i in range(len(emb_array)-1)]
+    coherence_score = round(np.mean(similarities), 4)
 
-    summary = "Smooth transitions" if score > 0.75 else \
-              "Moderately smooth with occasional jumps" if score > 0.5 else \
-              "Notably jittery or abrupt"
+    # Motion Analysis (mean, spikes)
+    mv_array = np.array([float(m) for m in motion_vectors])
+    motion_mean = round(np.mean(mv_array), 4)
+    motion_std = round(np.std(mv_array), 4)
+    motion_spikes = [i for i, val in enumerate(mv_array) if val > (motion_mean + 2 * motion_std)]
 
-    print(f" Temporal Score: {score} — {summary}")
+    # Scene Transitions by embedding jump
+    embedding_jumps = [1 - similarities[i] for i in range(len(similarities))]
+    scene_transitions = [i+1 for i, val in enumerate(embedding_jumps) if val > 0.4]  # 0.4 is an empirical threshold
 
-    return {
-        "temporal_score": score,
-        "temporal_summary": summary
+    # Semantic Drift
+    tag_sequence = [tags[0] if tags else "" for tags in object_tags]
+    semantic_segments = []
+    prev_tag = None
+    segment_start = 0
+    for idx, tag in enumerate(tag_sequence):
+        if tag != prev_tag:
+            if prev_tag is not None:
+                semantic_segments.append({"start": segment_start, "end": idx-1, "tag": prev_tag})
+            segment_start = idx
+            prev_tag = tag
+    if prev_tag:
+        semantic_segments.append({"start": segment_start, "end": len(tag_sequence)-1, "tag": prev_tag})
+
+    temporal_output = {
+        "temporal_coherence": coherence_score,
+        "motion_statistics": {
+            "mean_motion": motion_mean,
+            "motion_std_dev": motion_std,
+            "spike_frames": motion_spikes
+        },
+        "scene_transitions": scene_transitions,
+        "semantic_drift": semantic_segments
     }
+    print("Temporal Output:", temporal_output)
+    
+    return temporal_output

@@ -5,4 +5,9 @@ numpy
 python-multipart
 phidata
 openai
-
+transformers
+torch
+torchvision
+accelerate
+sentencepiece
+timm

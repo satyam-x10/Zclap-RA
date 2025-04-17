@@ -90,9 +90,36 @@ async def define_research_architecture(video_file="video.mp4"):
 
     return data_store
 
+async def  start_analysis ():
+    # Example usage
+    input_data = {
+        "video_file": "video.mp4",
+        "prompt": "A scenic view of mountains and rivers."
+    }
+    output_data = await ingest_video(input_data)
+    perception_data = await extract_perception(output_data)
 
-# Run the pipeline
-if __name__ == "__main__":
-    final_output = define_research_architecture()
-    print("Final output:")
-    print(final_output)
+    temporal_input = {
+    "video_frames": output_data["video_frames"],
+    "motion_vectors": perception_data["motion_vectors"],
+    "visual_embeddings": perception_data["features"]["visual_embeddings"],
+    "object_tags": perception_data["features"]["object_tags"],
+}
+
+    temporal_data = await eval_temporal(temporal_input)
+    semantic_data = await eval_semantic(output_data)
+    dynamics_data = await eval_dynamics(perception_data)
+    generalised_data = await eval_generalization(perception_data)
+
+    reasoning_input = {
+    **temporal_data,
+    **semantic_data,
+    **dynamics_data,
+    **generalised_data
+}
+
+    reasoning_data =await reason(reasoning_input)
+
+    reporting_data =await report(reasoning_data)
+    # print(f"Output data: {reporting_data}")
+    return reporting_data
