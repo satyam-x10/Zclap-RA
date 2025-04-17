@@ -1,10 +1,24 @@
 agent_manifest = {
     "agent_name": "reporting_agent",
-    "purpose": "Generates structured and natural language reports based on analysis results, including visualizations and summaries.",
+    "purpose": "Generates final report with metrics and qualitative summary.",
     "agent_type": "reporting",
-    "input_format": ["final_scores", "reasoning_log"],
-    "output_format": ["json_report", "nlp_summary", "charts"],
+    "input_format": ["score_dict", "insight_dict"],
+    "output_format": ["report"],
     "dependencies": ["reasoning_agent"],
-    "supported_tasks": ["report_generation", "data_visualization", "summary_extraction"],
-    "prompt_required": False
+    "supported_tasks": ["report_formatting"],
+    "prompt_required": False,
+    "input_type_details": {
+        "score_dict": "Raw aspect scores",
+        "insight_dict": "Reasoned insights"
+    },
+    "output_type_details": {
+        "report": "Structured dict with full evaluation report"
+    },
 }
+
+def run(score_dict, insight_dict):
+    return {
+        "metrics": score_dict,
+        "summary": insight_dict["remarks"],
+        "overall_score": insight_dict["overall_score"]
+    }

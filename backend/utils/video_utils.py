@@ -2,7 +2,7 @@ import os
 from fastapi import UploadFile
 from datetime import datetime
 
-UPLOAD_DIR = "uploads"
+UPLOAD_DIR = "data/uploads"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
