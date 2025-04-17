@@ -31,7 +31,7 @@ agent_manifest = {
     }
 }
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     video_path = input_data.get("video_file", "video.mp4")
 
     if not os.path.exists(video_path):
@@ -57,17 +57,17 @@ def run(input_data: dict) -> dict:
     return {"video_frames": frames,"prompt":"A video of a cat playing with a ball"} 
 
 
-def start_analysis():
+async def  start_analysis ():
     # Example usage
     input_data = {
-        "video_file": "../video.mp4"
+        "video_file": "video.mp4"
     }
-    output_data = run(input_data)
-    perception_data = perception_agent.run(output_data)
-    temporal_data = temporal_agent.run(perception_data)
-    semantic_data = semantic_agent.run(output_data)
-    dynamics_data = dynamics_agent.run(perception_data)
-    generalised_data = generalization_agent.run(perception_data)
+    output_data = await run(input_data)
+    perception_data = await perception_agent.run(output_data)
+    temporal_data = await temporal_agent.run(perception_data)
+    semantic_data = await semantic_agent.run(output_data)
+    dynamics_data = await dynamics_agent.run(perception_data)
+    generalised_data = await generalization_agent.run(perception_data)
 
     reasoning_input = {
     **temporal_data,
@@ -76,7 +76,8 @@ def start_analysis():
     **generalised_data
 }
 
-    reasoning_data = reasoning_agent.run(reasoning_input)
+    reasoning_data =await reasoning_agent.run(reasoning_input)
 
-    reporting_data = reporting_agent.run(reasoning_data)
+    reporting_data =await reporting_agent.run(reasoning_data)
     print(f"Output data: {reporting_data}")
+    return reporting_data

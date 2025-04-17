@@ -18,7 +18,7 @@ agent_manifest = {
 import numpy as np
 import cv2
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     motion_vectors = input_data.get("motion_vectors", [])
     if not motion_vectors:
         raise ValueError("Missing input: 'motion_vectors'")

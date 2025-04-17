@@ -59,7 +59,7 @@ agent_pipeline = {
 }
 
 
-def define_research_architecture(video_file="video.mp4"):
+async def define_research_architecture(video_file="video.mp4"):
     data_store = {"video_file": video_file}
 
     for level in sorted(agent_pipeline.keys()):

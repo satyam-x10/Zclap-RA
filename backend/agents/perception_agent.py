@@ -18,7 +18,7 @@ agent_manifest = {
 import numpy as np
 import cv2
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     frames = input_data.get("video_frames", [])
     if not frames:
         raise ValueError("Missing input: 'video_frames'")

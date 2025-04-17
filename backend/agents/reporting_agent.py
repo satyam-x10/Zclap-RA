@@ -19,7 +19,7 @@ agent_manifest = {
 import datetime
 
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     now = datetime.datetime.now().isoformat()
 
     print(" Generating final report...")

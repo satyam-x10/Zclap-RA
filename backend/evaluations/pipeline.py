@@ -9,7 +9,7 @@ from agents.reporting_agent import run as report
 
 from evaluations.Architecture import define_research_architecture
 
-def run_pipeline(video_path: str, parsed_json: str = ""):
+async def run_pipeline(video_path: str, parsed_json: str = ""):
     print(f"Running pipeline for video: {video_path} ")
 
     prompt = parsed_json.get("prompt", "") if parsed_json else ""
@@ -30,6 +30,6 @@ def run_pipeline(video_path: str, parsed_json: str = ""):
     print("Report Format:", report_format)
     print("Active Agents:", active_agents)
 
-    Research_Architecture = start_analysis(active_agents,video_path)
+    Research_Architecture = await start_analysis()
 
     return Research_Architecture

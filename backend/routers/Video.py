@@ -16,7 +16,7 @@ async def receive_data(
 
     # You can save the file or process it
     file_content = await fileData.read()
-    analysis = run_pipeline(file_path, parsed_json)
+    analysis = await run_pipeline(file_path, parsed_json)
     file_info = {
         "filename": fileData.filename,
         "content_type": fileData.content_type,

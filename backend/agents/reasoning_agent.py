@@ -15,7 +15,7 @@ agent_manifest = {
     },
 }
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     # Extract scores & summaries
     temporal = input_data.get("temporal_score", 0)
     semantic = input_data.get("semantic_score", 0)

@@ -18,7 +18,7 @@ agent_manifest = {
 import random
 
 
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     prompt = input_data.get("prompt", "")
     frames = input_data.get("video_frames", [])
 

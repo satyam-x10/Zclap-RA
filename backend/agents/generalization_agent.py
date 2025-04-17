@@ -17,7 +17,7 @@ agent_manifest = {
 }
 
 import numpy as np
-def run(input_data: dict) -> dict:
+async def run(input_data: dict) -> dict:
     motion_vectors = input_data.get("motion_vectors", [])
     brightness_series = input_data.get("frame_stats", {}).get("brightness_series", [])
 
