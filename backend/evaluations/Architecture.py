@@ -139,12 +139,13 @@ async def  start_analysis ():
 
     reasoning_data =await reasoning_agent(reasoning_input)
 
-    reporting_input= {
-    "temporal_output": {...},
-    "semantic_output": {...},
-    "dynamics_output": {...},
-    "generalisation_output": {...},
-    "reasoning_output": {...}
+    reporting_input = {
+    "video_source": "video.mp4",  # optional metadata
+    "temporal_output": temporal_data,
+    "semantic_output": semantic_data,
+    "dynamics_output": dynamics_data,
+    "generalisation_output": generalised_data,
+    "reasoning_output": reasoning_data
     }
 
 

@@ -1,84 +1,65 @@
-agent_manifest = {
-    "agent_name": "reporting_agent",
-    "purpose": "Generates final report with metrics and qualitative summary.",
-    "agent_type": "reporting",
-    "input_format": ["score_dict", "insight_dict"],
-    "output_format": ["report"],
-    "dependencies": ["reasoning_agent"],
-    "supported_tasks": ["report_formatting"],
-    "prompt_required": False,
-    "input_type_details": {
-        "score_dict": "Raw aspect scores",
-        "insight_dict": "Reasoned insights"
-    },
-    "output_type_details": {
-        "report": "Structured dict with full evaluation report"
-    },
-}
-
-import datetime
-
+from datetime import datetime
 
 async def run(input_data: dict) -> dict:
-    now = datetime.datetime.now().isoformat()
+    temporal = input_data["temporal_output"]
+    semantic = input_data["semantic_output"]
+    dynamics = input_data["dynamics_output"]
+    general = input_data["generalisation_output"]
+    reasoning = input_data["reasoning_output"]
 
-    print(" Generating final report...")
+    timestamp = str(datetime.utcnow())
 
-    # Build scorecard
     scorecard = {
         "temporal": {
-            "score": input_data.get("temporal_score"),
-            "summary": input_data.get("temporal_summary")
+            "score": temporal["temporal_coherence"],
+            "summary": "Smooth and consistent" if temporal["temporal_coherence"] > 0.85 else "Irregular or unstable"
         },
         "semantic": {
-            "score": input_data.get("semantic_score"),
-            "summary": input_data.get("semantic_summary")
+            "score": semantic["semantic_consistency_score"],
+            "summary": semantic["summary"]
         },
         "dynamics": {
-            "score": input_data.get("dynamics_score"),
-            "summary": input_data.get("dynamics_summary")
+            "score": dynamics["dynamics_robustness_score"],
+            "summary": dynamics["analysis"]
         },
         "generalization": {
-            "score": input_data.get("generalization_score"),
-            "summary": input_data.get("generalization_summary")
+            "score": general["generalisation_score"],
+            "summary": general["analysis"]
         }
     }
 
-    insights = input_data.get("consolidated_insights", [])
-    overall = input_data.get("summary", "")
-    recommendations = input_data.get("recommendations", "")
+    formatted_summary = f"""\
+Timestamp: {timestamp}
 
-    formatted_text = f"""
- Timestamp: {now}
-
- Scorecard:
+🎯 Scorecard:
 - Temporal Coherence: {scorecard['temporal']['score']} — {scorecard['temporal']['summary']}
 - Semantic Consistency: {scorecard['semantic']['score']} — {scorecard['semantic']['summary']}
 - Dynamic Handling: {scorecard['dynamics']['score']} — {scorecard['dynamics']['summary']}
 - Generalization: {scorecard['generalization']['score']} — {scorecard['generalization']['summary']}
 
- Reasoning Summary:
-{overall}
-
- Consolidated Insights:
-{chr(10).join(insights)}
+🧠 Reasoning Verdict:
+{reasoning['explanation']}
 
 ✅ Final Recommendation:
-{recommendations}
-""".strip()
+{reasoning['verdict']}
+"""
 
-    report_data={
+    report_data = {
         "final_report": {
-            "timestamp": now,
+            "timestamp": timestamp,
             "scorecard": scorecard,
-            "summary": overall,
-            "insights": insights,
-            "recommendations": recommendations
+            "summary": reasoning["explanation"],
+            "insights": [
+                scorecard["temporal"]["summary"],
+                scorecard["semantic"]["summary"],
+                scorecard["dynamics"]["summary"],
+                scorecard["generalization"]["summary"]
+            ],
+            "recommendations": reasoning["verdict"]
         },
         "scorecard": scorecard,
-        "formatted_summary": formatted_text
+        "formatted_summary": formatted_summary.strip()
     }
 
-    print('report_data', report_data)
-    
+    print("✅ Final report generated. ",report_data)
     return report_data
