@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: zclap-backend
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: zclap-frontend
+    ports:
+      - "3000:80"  # Nginx serves on 80 inside container
+    depends_on:
+      - backend

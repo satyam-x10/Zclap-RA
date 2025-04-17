@@ -17,8 +17,6 @@ agent_manifest = {
 }
 
 
-import torch
-
 def run(frames, prompt):
     
     return {"semantic_consistency_score": 0.85}  # Mock score for demonstration

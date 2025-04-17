@@ -13,5 +13,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# health-check
+@app.get("/")
+async def health_check():
+    return {"status": "ok"}
+
 # Include routers
 app.include_router(Video.router, prefix="/api")
