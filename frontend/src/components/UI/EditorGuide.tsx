@@ -8,7 +8,7 @@ export const EvaluationCriteriaOptions = {
     { value: 'pdf', label: 'PDF' },
   ],
   pipeline: [
-    { value: 'default', label: 'Default' },
+    { value: 'bus', label: 'bus' },
     { value: 'ring', label: 'Ring' },
     { value: 'star', label: 'Star' },
     { value: 'tree', label: 'Tree' },

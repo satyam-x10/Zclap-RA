@@ -1,4 +1,4 @@
-from agents.video_ingestion_agent import run as ingest_video
+from agents.video_ingestion_agent import start_analysis
 from agents.temporal_analysis_agent import run as eval_temporal
 from agents.semantic_analysis_agent import run as eval_semantic
 from agents.dynamics_robustness_agent import run as eval_dynamics
@@ -20,9 +20,8 @@ def run_pipeline(video_path: str, parsed_json: str = ""):
     active_agents = []
 
     for category, agents in parsed_json.get("criteria", {}).items():
-        for agent_name, is_active in agents.items():
-            if is_active:
-                active_agents.append(agent_name)
+        for agent_name in agents:
+            active_agents.append(agent_name)
 
     # Final Output
     print("Prompt:", prompt)
@@ -31,7 +30,6 @@ def run_pipeline(video_path: str, parsed_json: str = ""):
     print("Report Format:", report_format)
     print("Active Agents:", active_agents)
 
-    Research_Architecture = define_research_architecture(pipeline_mode,active_agents)
+    Research_Architecture = start_analysis(active_agents,video_path)
 
-    return
-    
+    return Research_Architecture

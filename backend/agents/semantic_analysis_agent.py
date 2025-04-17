@@ -15,8 +15,28 @@ agent_manifest = {
         "semantic_consistency_score": "Float between 0 and 1"
     },
 }
+import random
 
 
-def run(frames, prompt):
-    
-    return {"semantic_consistency_score": 0.85}  # Mock score for demonstration
+def run(input_data: dict) -> dict:
+    prompt = input_data.get("prompt", "")
+    frames = input_data.get("video_frames", [])
+
+    if not prompt:
+        raise ValueError("Missing required 'prompt' for semantic analysis.")
+    if not frames:
+        raise ValueError("Missing input: 'video_frames'")
+
+    print(f"🧠 Checking semantic consistency against prompt: \"{prompt}\"")
+
+    # Simulated score (in production: use CLIP similarity on sampled frames)
+    simulated_score = round(random.uniform(0.4, 0.95), 4)  # stub
+
+    summary = "Highly aligned with prompt" if simulated_score > 0.8 else \
+              "Moderately aligned with prompt" if simulated_score > 0.6 else \
+              "Weak alignment with described content"
+
+    return {
+        "semantic_score": float(simulated_score),
+        "semantic_summary": summary
+    }

@@ -16,9 +16,65 @@ agent_manifest = {
     },
 }
 
-def run(score_dict, insight_dict):
+import datetime
+
+
+def run(input_data: dict) -> dict:
+    now = datetime.datetime.now().isoformat()
+
+    print(" Generating final report...")
+
+    # Build scorecard
+    scorecard = {
+        "temporal": {
+            "score": input_data.get("temporal_score"),
+            "summary": input_data.get("temporal_summary")
+        },
+        "semantic": {
+            "score": input_data.get("semantic_score"),
+            "summary": input_data.get("semantic_summary")
+        },
+        "dynamics": {
+            "score": input_data.get("dynamics_score"),
+            "summary": input_data.get("dynamics_summary")
+        },
+        "generalization": {
+            "score": input_data.get("generalization_score"),
+            "summary": input_data.get("generalization_summary")
+        }
+    }
+
+    insights = input_data.get("consolidated_insights", [])
+    overall = input_data.get("summary", "")
+    recommendations = input_data.get("recommendations", "")
+
+    formatted_text = f"""
+ Timestamp: {now}
+
+ Scorecard:
+- Temporal Coherence: {scorecard['temporal']['score']} — {scorecard['temporal']['summary']}
+- Semantic Consistency: {scorecard['semantic']['score']} — {scorecard['semantic']['summary']}
+- Dynamic Handling: {scorecard['dynamics']['score']} — {scorecard['dynamics']['summary']}
+- Generalization: {scorecard['generalization']['score']} — {scorecard['generalization']['summary']}
+
+ Reasoning Summary:
+{overall}
+
+ Consolidated Insights:
+{chr(10).join(insights)}
+
+✅ Final Recommendation:
+{recommendations}
+""".strip()
+
     return {
-        "metrics": score_dict,
-        "summary": insight_dict["remarks"],
-        "overall_score": insight_dict["overall_score"]
+        "final_report": {
+            "timestamp": now,
+            "scorecard": scorecard,
+            "summary": overall,
+            "insights": insights,
+            "recommendations": recommendations
+        },
+        "scorecard": scorecard,
+        "formatted_summary": formatted_text
     }

@@ -18,10 +18,29 @@ agent_manifest = {
 import numpy as np
 import cv2
 
-def run(frames):
-    scores = []
-    for i in range(1, len(frames)):
-        flow = cv2.absdiff(frames[i], frames[i-1])
-        scores.append(np.mean(flow))
-    temporal_score = 1.0 - np.mean(scores) / 255  # Normalize
-    return {"temporal_coherence_score": round(temporal_score, 2)}
+def run(input_data: dict) -> dict:
+    motion_vectors = input_data.get("motion_vectors", [])
+    if not motion_vectors:
+        raise ValueError("Missing input: 'motion_vectors'")
+
+    # Convert to plain float array
+    mv = np.array([float(m) for m in motion_vectors])
+
+    # Normalize & invert: Lower motion = smoother → higher score
+    max_mv = np.max(mv) if len(mv) > 0 else 1.0
+    norm_mv = mv / max_mv
+    score = 1.0 - np.mean(norm_mv)
+
+    # Clamp to [0, 1]
+    score = max(0.0, min(1.0, round(score, 4)))
+
+    summary = "Smooth transitions" if score > 0.75 else \
+              "Moderately smooth with occasional jumps" if score > 0.5 else \
+              "Notably jittery or abrupt"
+
+    print(f" Temporal Score: {score} — {summary}")
+
+    return {
+        "temporal_score": score,
+        "temporal_summary": summary
+    }

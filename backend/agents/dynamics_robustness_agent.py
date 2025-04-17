@@ -19,10 +19,27 @@ agent_manifest = {
 import numpy as np
 import cv2
 
-def run(frames):
-    diffs = []
-    for i in range(1, len(frames)):
-        diff = cv2.absdiff(frames[i], frames[i-1])
-        diffs.append(np.mean(diff))
-    stability = 1.0 - np.std(diffs) / 255
-    return {"dynamic_scene_handling_score": round(stability, 2)}
+def run(input_data: dict) -> dict:
+    motion_vectors = input_data.get("motion_vectors", [])
+    if not motion_vectors:
+        raise ValueError("Missing input: 'motion_vectors'")
+
+    mv = np.array([float(m) for m in motion_vectors])
+    std_mv = np.std(mv)
+    max_mv = np.max(mv)
+
+    # Heuristic: high variance or big spikes = poor robustness
+    # We'll flip it: higher variance = lower score
+    score = 1.0 - (std_mv / max_mv if max_mv > 0 else 0)
+    score = max(0.0, min(1.0, round(score, 4)))
+
+    summary = "Highly robust under dynamic scenes" if score > 0.8 else \
+              "Moderately stable with noticeable transitions" if score > 0.6 else \
+              "Prone to jitter or abrupt scene shifts"
+
+    print(f"🎥 Dynamics Score: {score} — {summary}")
+
+    return {
+        "dynamics_score": float(score),
+        "dynamics_summary": summary
+    }
