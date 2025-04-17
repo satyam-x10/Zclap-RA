@@ -4,8 +4,8 @@ from agents.semantic_analysis_agent import run as eval_semantic
 from agents.dynamics_robustness_agent import run as eval_dynamics
 from agents.generalization_agent import run as eval_generalization
 from agents.perception_agent import run as extract_perception
-from agents.reasoning_agent import run as reason
-from agents.reporting_agent import run as report
+from agents.reasoning_agent import run as reasoning_agent
+from agents.reporting_agent import run as reporting_agent
 
 from evaluations.Architecture import define_research_architecture
 

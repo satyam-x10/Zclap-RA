@@ -67,7 +67,7 @@ async def run(input_data: dict) -> dict:
 {recommendations}
 """.strip()
 
-    return {
+    report_data={
         "final_report": {
             "timestamp": now,
             "scorecard": scorecard,
@@ -78,3 +78,7 @@ async def run(input_data: dict) -> dict:
         "scorecard": scorecard,
         "formatted_summary": formatted_text
     }
+
+    print('report_data', report_data)
+    
+    return report_data

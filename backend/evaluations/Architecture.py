@@ -10,8 +10,8 @@ from agents.semantic_analysis_agent import run as eval_semantic
 from agents.dynamics_robustness_agent import run as eval_dynamics
 from agents.generalization_agent import run as eval_generalization
 from agents.perception_agent import run as extract_perception
-from agents.reasoning_agent import run as reason
-from agents.reporting_agent import run as report
+from agents.reasoning_agent import run as reasoning_agent
+from agents.reporting_agent import run as reporting_agent
 
 
 # Actual agent function mapping
@@ -22,8 +22,8 @@ available_agents = {
     "dynamics_robustness_agent": eval_dynamics,
     "generalization_agent": eval_generalization,
     "perception_agent": extract_perception,
-    "reasoning_agent": reason,
-    "reporting_agent": report
+    "reasoning_agent": reasoning_agent,
+    "reporting_agent": reporting_agent
 }
 
 agent_pipeline = {
@@ -113,21 +113,41 @@ async def  start_analysis ():
     "motion_vectors": perception_data["motion_vectors"],
     "scene_transitions": temporal_data["scene_transitions"],
     "semantic_consistency_score": semantic_data["semantic_consistency_score"],
-    "event_segment" : semantic_data["event_segment"],
+    "event_segments" : semantic_data["event_segments"],
     }
 
     dynamics_data = await eval_dynamics(dynamic_robustness_input)
-    generalised_data = await eval_generalization(perception_data)
+
+    generalisation_input = {
+    "captions": semantic_data["captions"],
+    "event_segments": semantic_data["event_segments"],
+    "semantic_consistency_score": semantic_data["semantic_consistency_score"],
+    "visual_embeddings": perception_data["features"]["visual_embeddings"]
+}
+    generalised_data = await eval_generalization(generalisation_input)
 
     reasoning_input = {
-    **temporal_data,
-    **semantic_data,
-    **dynamics_data,
-    **generalised_data
-}
+    "temporal_coherence": temporal_data["temporal_coherence"],
+    "semantic_consistency_score": semantic_data["semantic_consistency_score"],
+    "dynamics_robustness_score": dynamics_data["dynamics_robustness_score"],
+    "generalisation_score": generalised_data["generalisation_score"],
+    "overfitting_warning": generalised_data["overfitting_warning"],
+    "generalisation_analysis": generalised_data["analysis"],
+    "semantic_summary": semantic_data["summary"],
+    "dynamics_analysis": dynamics_data["analysis"]
+    }
 
-    reasoning_data =await reason(reasoning_input)
+    reasoning_data =await reasoning_agent(reasoning_input)
 
-    reporting_data =await report(reasoning_data)
+    reporting_input= {
+    "temporal_output": {...},
+    "semantic_output": {...},
+    "dynamics_output": {...},
+    "generalisation_output": {...},
+    "reasoning_output": {...}
+    }
+
+
+    reporting_data =await reporting_agent(reporting_input)
     # print(f"Output data: {reporting_data}")
     return reporting_data

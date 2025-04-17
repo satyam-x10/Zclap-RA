@@ -51,9 +51,13 @@ async def run(input_data: dict) -> dict:
         "Significant loss of consistency during dynamic scenes."
     )
 
-    return {
+    dynamics_robustness_output = {
         "dynamics_robustness_score": robustness_score,
         "high_motion_zones": high_motion_indices,
         "scene_transitions": scene_transitions,
         "analysis": analysis
     }
+    
+    print('Dynamics Robustness Output:')
+
+    return dynamics_robustness_output
