@@ -7,40 +7,31 @@ from agents.perception_agent import run as extract_perception
 from agents.reasoning_agent import run as reason
 from agents.reporting_agent import run as report
 
-def run_pipeline(video_path: str, prompt: str = ""):
-    memory = {}
+from evaluations.Architecture import define_research_architecture
 
-    # Step 1: Ingest video
-    memory["video_frames"] = ingest_video(video_path)
+def run_pipeline(video_path: str, parsed_json: str = ""):
+    print(f"Running pipeline for video: {video_path} ")
 
-    # Step 2: Perception (optional shared features)
-    memory["frame_embeddings"] = extract_perception(memory["video_frames"])["frame_embeddings"]
+    prompt = parsed_json.get("prompt", "") if parsed_json else ""
+    frame_sampling_rate = parsed_json.get("frame_sampling_rate", 1) if parsed_json else 1
+    pipeline_mode = parsed_json.get("pipeline_mode", "default") if parsed_json else "default"
+    report_format = parsed_json.get("report_format", "json") if parsed_json else "json"
 
-    # Step 3: Temporal coherence analysis
-    memory["temporal_coherence_score"] = eval_temporal(memory["video_frames"])["temporal_coherence_score"]
+    active_agents = []
 
-    # Step 4: Semantic consistency analysis
-    memory["semantic_consistency_score"] = eval_semantic(memory["video_frames"], prompt)["semantic_consistency_score"]
+    for category, agents in parsed_json.get("criteria", {}).items():
+        for agent_name, is_active in agents.items():
+            if is_active:
+                active_agents.append(agent_name)
 
-    # Step 5: Dynamic scene robustness
-    memory["dynamic_scene_handling_score"] = eval_dynamics(memory["video_frames"])["dynamic_scene_handling_score"]
+    # Final Output
+    print("Prompt:", prompt)
+    print("Frame Sampling Rate:", frame_sampling_rate)
+    print("Pipeline Mode:", pipeline_mode)
+    print("Report Format:", report_format)
+    print("Active Agents:", active_agents)
 
-    # Step 6: Generalization analysis (depends on semantic score)
-    memory["generalization_score"] = eval_generalization(
-        memory["video_frames"],
-        memory["semantic_consistency_score"]
-    )["generalization_score"]
+    Research_Architecture = define_research_architecture(pipeline_mode,active_agents)
 
-    # Step 7: Reasoning — combine scores into insights
-    score_dict = {
-        "temporal_coherence": memory["temporal_coherence_score"],
-        "semantic_consistency": memory["semantic_consistency_score"],
-        "dynamic_scene_handling": memory["dynamic_scene_handling_score"],
-        "generalization": memory["generalization_score"]
-    }
-    insight_dict = reason(score_dict)
-
-    # Step 8: Reporting — final output
-    final_report = report(score_dict, insight_dict)
-
-    return final_report
+    return
+    

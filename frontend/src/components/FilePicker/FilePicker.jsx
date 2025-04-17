@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './FilePicker.css'; // We'll define this CSS file content below
 import { ProjectDescriptionPrimary, ProjectDescriptionSecondary } from '../../utils/Constants';
-
+import EditorGuide from '../UI/EditorGuide';
 
 export default function FilePicker({setFileData}) {
   const [file, setFile] = useState(null);
@@ -9,6 +9,15 @@ export default function FilePicker({setFileData}) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef(null);
   const videoRef = useRef(null);
+
+  const agentTypes = {
+    ingestion: ['video_ingestion_agent'],
+    analysis: ['temporal_analysis_agent', 'semantic_analysis_agent', 'dynamics_robustness_agent', 'generalization_agent'],
+    feature_extractor: ['perception_agent'],
+    synthesis: ['reasoning_agent'],
+    reporting: ['reporting_agent'],
+    controller: ['coordinator_agent'],
+  };
 
   useEffect(() => {
     if (!file) {
@@ -147,7 +156,8 @@ export default function FilePicker({setFileData}) {
         <p className="description-text">
           {ProjectDescriptionSecondary}
         </p>
-      </div>
+      </div>      
+           
     </div>
   );
 }

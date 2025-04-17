@@ -59,6 +59,7 @@ export default function JsonEditor({setJsonData}) {
     <div className="json-editor-container">
       <div className="editor-header">
         <h2 className="editor-title">JSON Editor</h2>
+        {/* give two switching option as json or form */}
         <div className="editor-actions">
           <button
             id="copy-button"
@@ -90,11 +91,14 @@ export default function JsonEditor({setJsonData}) {
             fontSize: 20,
             scrollBeyondLastLine: false,
             folding: true,
-            lineNumbers: "on",
+            lineNumbers: "off",
             renderLineHighlight: "all",
             tabSize: 2,
             formatOnPaste: true,
             automaticLayout: true,
+            // add gap betwee n lines
+            lineDecorationsWidth: 0,
+            lineHeight: 30,            
             scrollbar: {
               vertical: "auto",
               horizontal: "auto",
