@@ -113,7 +113,7 @@ async def  start_analysis ():
     "motion_vectors": perception_data["motion_vectors"],
     "scene_transitions": temporal_data["scene_transitions"],
     "semantic_consistency_score": semantic_data["semantic_consistency_score"],
-    "event_segment" : semantic_data["event_segment"],
+    "event_segments" : semantic_data["event_segments"],
     }
 
     dynamics_data = await eval_dynamics(dynamic_robustness_input)
