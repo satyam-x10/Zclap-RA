@@ -107,8 +107,16 @@ async def  start_analysis ():
 }
 
     temporal_data = await eval_temporal(temporal_input)
-    semantic_data = await eval_semantic(output_data)
-    dynamics_data = await eval_dynamics(perception_data)
+    semantic_data = await eval_semantic(temporal_input)
+
+    dynamic_robustness_input = {
+    "motion_vectors": perception_data["motion_vectors"],
+    "scene_transitions": temporal_data["scene_transitions"],
+    "semantic_consistency_score": semantic_data["semantic_consistency_score"],
+    "event_segment" : semantic_data["event_segment"],
+    }
+
+    dynamics_data = await eval_dynamics(dynamic_robustness_input)
     generalised_data = await eval_generalization(perception_data)
 
     reasoning_input = {

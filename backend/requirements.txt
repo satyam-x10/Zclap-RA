@@ -11,3 +11,4 @@ torchvision
 accelerate
 sentencepiece
 timm
+sentence-transformers

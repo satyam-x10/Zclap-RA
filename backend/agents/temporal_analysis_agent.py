@@ -70,6 +70,6 @@ async def run(input_data: dict) -> dict:
         "scene_transitions": scene_transitions,
         "semantic_drift": semantic_segments
     }
-    print("Temporal Output:", temporal_output)
+    print("Temporal Output:")
     
     return temporal_output

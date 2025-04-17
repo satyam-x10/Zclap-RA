@@ -15,28 +15,76 @@ agent_manifest = {
         "semantic_consistency_score": "Float between 0 and 1"
     },
 }
-import random
 
+import numpy as np
+import cv2
+import torch
+from sklearn.metrics.pairwise import cosine_similarity
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
 async def run(input_data: dict) -> dict:
-    prompt = input_data.get("prompt", "")
     frames = input_data.get("video_frames", [])
+    motion_vectors = input_data.get("motion_vectors", [])
+    embeddings = input_data.get("visual_embeddings", [])
 
-    if not prompt:
-        raise ValueError("Missing required 'prompt' for semantic analysis.")
-    if not frames:
-        raise ValueError("Missing input: 'video_frames'")
+    if not frames or not motion_vectors or not embeddings:
+        raise ValueError("Missing one or more required inputs: 'video_frames', 'motion_vectors', 'visual_embeddings'")
 
-    print(f"🧠 Checking semantic consistency against prompt: \"{prompt}\"")
+    captions = []
+    entity_map = {}
+    event_segments = []
+    prev_caption = None
+    segment_start = 0
 
-    # Simulated score (in production: use CLIP similarity on sampled frames)
-    simulated_score = round(random.uniform(0.4, 0.95), 4)  # stub
+    # Generate captions
+    for i, frame in enumerate(frames[101:110], start=101):
+        print(f"Processing frame {i}...")
+        
+        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        pil_img = Image.fromarray(img)
+        inputs = processor(images=pil_img, return_tensors="pt")
+        out = model.generate(**inputs)
+        caption = processor.decode(out[0], skip_special_tokens=True)
+        captions.append(caption)
 
-    summary = "Highly aligned with prompt" if simulated_score > 0.8 else \
-              "Moderately aligned with prompt" if simulated_score > 0.6 else \
-              "Weak alignment with described content"
+        # Entity tracking
+        for word in caption.split():
+            if word.lower() not in entity_map:
+                entity_map[word.lower()] = [i, i]
+            else:
+                entity_map[word.lower()][1] = i
 
-    return {
-        "semantic_score": float(simulated_score),
-        "semantic_summary": summary
+        # Segment events
+        if caption != prev_caption:
+            if prev_caption is not None:
+                event_segments.append({"start": segment_start, "end": i - 1, "event": prev_caption})
+            segment_start = i
+            prev_caption = caption
+
+    if prev_caption:
+        event_segments.append({"start": segment_start, "end": len(frames) - 1, "event": prev_caption})
+
+    # Semantic consistency
+    from sentence_transformers import SentenceTransformer
+    sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+    caption_embeddings = sentence_model.encode(captions)
+    similarities = [cosine_similarity([caption_embeddings[i]], [caption_embeddings[i+1]])[0][0] for i in range(len(captions) - 1)]
+    semantic_consistency_score = round(np.mean(similarities), 4) if similarities else 1.0
+
+    # Summary generation (simple)
+    summary = ". ".join([seg["event"] for seg in event_segments]) + "."
+
+    semantic_output = {
+        "captions": captions,
+        "semantic_consistency_score": semantic_consistency_score,
+        "entity_map": entity_map,
+        "event_segments": event_segments,
+        "summary": summary
     }
+    print("Semantic Analysis Output:")
+
+    return semantic_output

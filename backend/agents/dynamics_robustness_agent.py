@@ -21,25 +21,39 @@ import cv2
 
 async def run(input_data: dict) -> dict:
     motion_vectors = input_data.get("motion_vectors", [])
-    if not motion_vectors:
-        raise ValueError("Missing input: 'motion_vectors'")
+    scene_transitions = input_data.get("scene_transitions", [])
+    semantic_score = input_data.get("semantic_consistency_score", 1.0)
+    event_segments = input_data.get("event_segments", [])
+
+    if not motion_vectors or event_segments is None:
+        raise ValueError("Missing required inputs: 'motion_vectors', 'event_segments'")
 
     mv = np.array([float(m) for m in motion_vectors])
-    std_mv = np.std(mv)
-    max_mv = np.max(mv)
+    motion_mean = np.mean(mv)
+    motion_std = np.std(mv)
 
-    # Heuristic: high variance or big spikes = poor robustness
-    # We'll flip it: higher variance = lower score
-    score = 1.0 - (std_mv / max_mv if max_mv > 0 else 0)
-    score = max(0.0, min(1.0, round(score, 4)))
+    high_motion_indices = [i for i, val in enumerate(mv) if val > (motion_mean + motion_std)]
 
-    summary = "Highly robust under dynamic scenes" if score > 0.8 else \
-              "Moderately stable with noticeable transitions" if score > 0.6 else \
-              "Prone to jitter or abrupt scene shifts"
+    # Penalize score if semantic consistency is poor during motion
+    robustness_score = semantic_score
+    if len(high_motion_indices) > 0 and semantic_score < 0.8:
+        robustness_score *= 0.8
+    if len(scene_transitions) > 0 and semantic_score < 0.7:
+        robustness_score *= 0.75
 
-    print(f"🎥 Dynamics Score: {score} — {summary}")
+    robustness_score = round(min(1.0, robustness_score), 4)
+
+    analysis = (
+        "Stable under motion and transitions."
+        if robustness_score > 0.85 else
+        "Minor semantic drift during dynamic parts."
+        if robustness_score > 0.6 else
+        "Significant loss of consistency during dynamic scenes."
+    )
 
     return {
-        "dynamics_score": float(score),
-        "dynamics_summary": summary
+        "dynamics_robustness_score": robustness_score,
+        "high_motion_zones": high_motion_indices,
+        "scene_transitions": scene_transitions,
+        "analysis": analysis
     }
