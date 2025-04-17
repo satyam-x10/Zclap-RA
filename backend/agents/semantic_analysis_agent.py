@@ -41,7 +41,7 @@ async def run(input_data: dict) -> dict:
     segment_start = 0
 
     # Generate captions
-    for i, frame in enumerate(frames[101:110], start=101):
+    for i, frame in enumerate(frames):
         print(f"Processing frame {i}...")
         
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

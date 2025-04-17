@@ -1,13 +1,5 @@
-from agents.video_ingestion_agent import start_analysis
-from agents.temporal_analysis_agent import run as eval_temporal
-from agents.semantic_analysis_agent import run as eval_semantic
-from agents.dynamics_robustness_agent import run as eval_dynamics
-from agents.generalization_agent import run as eval_generalization
-from agents.perception_agent import run as extract_perception
-from agents.reasoning_agent import run as reasoning_agent
-from agents.reporting_agent import run as reporting_agent
 
-from evaluations.Architecture import define_research_architecture
+from evaluations.Architecture import start_analysis
 
 async def run_pipeline(video_path: str, parsed_json: str = ""):
     print(f"Running pipeline for video: {video_path} ")
@@ -30,6 +22,6 @@ async def run_pipeline(video_path: str, parsed_json: str = ""):
     print("Report Format:", report_format)
     print("Active Agents:", active_agents)
 
-    Research_Architecture = await start_analysis()
+    Research = await start_analysis(video_path,parsed_json)
 
-    return Research_Architecture
+    return Research

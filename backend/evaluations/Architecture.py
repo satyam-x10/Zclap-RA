@@ -90,17 +90,17 @@ async def define_research_architecture(video_file="video.mp4"):
 
     return data_store
 
-async def  start_analysis ():
+async def  start_analysis (video_path,parsed_json):
     # Example usage
     input_data = {
         "video_file": "video.mp4",
-        "prompt": "A scenic view of mountains and rivers."
+        "prompt": parsed_json["prompt"],
     }
-    output_data = await ingest_video(input_data)
-    perception_data = await extract_perception(output_data)
+    frames = await ingest_video(input_data)
+    perception_data = await extract_perception(frames)
 
     temporal_input = {
-    "video_frames": output_data["video_frames"],
+    "video_frames": frames["video_frames"],
     "motion_vectors": perception_data["motion_vectors"],
     "visual_embeddings": perception_data["features"]["visual_embeddings"],
     "object_tags": perception_data["features"]["object_tags"],
@@ -151,4 +151,12 @@ async def  start_analysis ():
 
     reporting_data =await reporting_agent(reporting_input)
     # print(f"Output data: {reporting_data}")
-    return reporting_data
+    all_agents_data= {
+        "temporal_analysis": temporal_data,
+        "semantic_analysis": semantic_data,
+        "dynamics_robustness": dynamics_data,
+        "generalization": generalised_data,
+        "reasoning": reasoning_data,
+        "reporting": reporting_data
+    }
+    return all_agents_data

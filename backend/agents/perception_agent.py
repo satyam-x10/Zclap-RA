@@ -53,7 +53,7 @@ async def run(input_data: dict) -> dict:
     prev_gray = None
     prev_hist = None
 
-    for i, frame in enumerate(frames[101:110], start=101):
+    for i, frame in enumerate(frames):
         # Grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 

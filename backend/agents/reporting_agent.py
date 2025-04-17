@@ -61,5 +61,5 @@ Timestamp: {timestamp}
         "formatted_summary": formatted_summary.strip()
     }
 
-    print("✅ Final report generated. ",report_data)
+    print("✅ Final report generated. ")
     return report_data
