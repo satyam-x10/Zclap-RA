@@ -33,7 +33,7 @@ const JsonGuide = () => (
     <p><strong>options:</strong> These additional settings further define how your evaluation runs:</p>
     <ul style={{ marginLeft: '1rem' }}>
       <li><strong>prompt</strong>: A text description of expected video content (required if using <code>semantic_analysis_agent</code>)</li>
-      <li><strong>frame_sampling_rate</strong>: Integer indicating how many frames to skip (e.g., 2 = every second frame)</li>
+      <li><strong>target_frame_rate</strong>: Integer indicating how many frames to skip (e.g., 2 = every second frame)</li>
       <li><strong>pipeline</strong>: Defines the agent communication topology. Options:
         <ul>
           {EvaluationCriteriaOptions.pipeline.map(opt => <li key={opt.value}><code>{opt.value}</code>: {opt.label} layout</li>)}

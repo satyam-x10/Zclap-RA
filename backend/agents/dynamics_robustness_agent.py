@@ -23,9 +23,8 @@ async def run(input_data: dict) -> dict:
     motion_vectors = input_data.get("motion_vectors", [])
     scene_transitions = input_data.get("scene_transitions", [])
     semantic_score = input_data.get("semantic_consistency_score", 1.0)
-    event_segments = input_data.get("event_segments", [])
 
-    if not motion_vectors or event_segments is None:
+    if motion_vectors is None:
         raise ValueError("Missing required inputs: 'motion_vectors', 'event_segments'")
 
     mv = np.array([float(m) for m in motion_vectors])

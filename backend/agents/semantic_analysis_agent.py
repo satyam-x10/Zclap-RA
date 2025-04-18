@@ -2,89 +2,74 @@ agent_manifest = {
     "agent_name": "semantic_analysis_agent",
     "purpose": "Analyzes visual-prompt alignment using vision-language models.",
     "agent_type": "analysis",
-    "input_format": ["video_frames", "text_prompt"],
-    "output_format": ["semantic_consistency_score"],
+    "input_format": ["video_frames", "text_prompt", "semantic_tags", "visual_embeddings"],
+    "output_format": ["semantic_consistency_score", "semantic_segments", "entity_map", "summary"],
     "dependencies": ["video_ingestion_agent"],
-    "supported_tasks": ["CLIP_matching"],
+    "supported_tasks": ["semantic_drift", "entity_tracking", "segment_summary"],
     "prompt_required": True,
     "input_type_details": {
         "video_frames": "List of video frame tensors",
-        "text_prompt": "Prompt string"
+        "text_prompt": "Prompt string",
+        "semantic_tags": "List of captions or tags per frame",
+        "visual_embeddings": "List of frame-wise image embeddings"
     },
     "output_type_details": {
-        "semantic_consistency_score": "Float between 0 and 1"
+        "semantic_consistency_score": "Float between 0 and 1",
+        "semantic_segments": "List of segments with consistent semantic tags",
+        "entity_map": "Map of entities to their frame span",
+        "summary": "Generated summary based on semantic tags"
     },
 }
 
 import numpy as np
-import cv2
-import torch
 from sklearn.metrics.pairwise import cosine_similarity
-from transformers import BlipProcessor, BlipForConditionalGeneration
-from PIL import Image
-
-processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+from sentence_transformers import SentenceTransformer
 
 async def run(input_data: dict) -> dict:
     frames = input_data.get("video_frames", [])
-    motion_vectors = input_data.get("motion_vectors", [])
-    embeddings = input_data.get("visual_embeddings", [])
+    semantic_tags = input_data.get("semantic_tags", [])
+    visual_embeddings = input_data.get("visual_embeddings", [])
 
-    if not frames or not motion_vectors or not embeddings:
-        raise ValueError("Missing one or more required inputs: 'video_frames', 'motion_vectors', 'visual_embeddings'")
+    if not frames or not semantic_tags or not visual_embeddings:
+        raise ValueError("Missing required inputs: 'video_frames', 'semantic_tags', or 'visual_embeddings'.")
 
-    captions = []
+    # Semantic Drift Segmentation
+    tag_sequence = [tags[0] if tags else "" for tags in semantic_tags]
+    semantic_segments = []
+    prev_tag, segment_start = None, 0
+    for idx, tag in enumerate(tag_sequence):
+        if tag != prev_tag:
+            if prev_tag is not None:
+                semantic_segments.append({"start": segment_start, "end": idx - 1, "tag": prev_tag})
+            segment_start = idx
+            prev_tag = tag
+    if prev_tag:
+        semantic_segments.append({"start": segment_start, "end": len(tag_sequence) - 1, "tag": prev_tag})
+
+    # Entity Extraction
     entity_map = {}
-    event_segments = []
-    prev_caption = None
-    segment_start = 0
-
-    # Generate captions
-    for i, frame in enumerate(frames):
-        print(f"Processing frame {i}...")
-        
-        img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        pil_img = Image.fromarray(img)
-        inputs = processor(images=pil_img, return_tensors="pt")
-        out = model.generate(**inputs)
-        caption = processor.decode(out[0], skip_special_tokens=True)
-        captions.append(caption)
-
-        # Entity tracking
-        for word in caption.split():
-            if word.lower() not in entity_map:
-                entity_map[word.lower()] = [i, i]
+    for i, tag in enumerate(tag_sequence):
+        for word in tag.split():
+            word = word.lower()
+            if word not in entity_map:
+                entity_map[word] = [i, i]
             else:
-                entity_map[word.lower()][1] = i
+                entity_map[word][1] = i
 
-        # Segment events
-        if caption != prev_caption:
-            if prev_caption is not None:
-                event_segments.append({"start": segment_start, "end": i - 1, "event": prev_caption})
-            segment_start = i
-            prev_caption = caption
-
-    if prev_caption:
-        event_segments.append({"start": segment_start, "end": len(frames) - 1, "event": prev_caption})
-
-    # Semantic consistency
-    from sentence_transformers import SentenceTransformer
+    # Semantic Consistency Score using Sentence Embeddings
     sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
-    caption_embeddings = sentence_model.encode(captions)
-    similarities = [cosine_similarity([caption_embeddings[i]], [caption_embeddings[i+1]])[0][0] for i in range(len(captions) - 1)]
+    tag_embeddings = sentence_model.encode(tag_sequence)
+    similarities = [cosine_similarity([tag_embeddings[i]], [tag_embeddings[i+1]])[0][0]
+                    for i in range(len(tag_embeddings) - 1)]
     semantic_consistency_score = round(np.mean(similarities), 4) if similarities else 1.0
 
-    # Summary generation (simple)
-    summary = ". ".join([seg["event"] for seg in event_segments]) + "."
+    # Semantic Summary
 
     semantic_output = {
-        "captions": captions,
         "semantic_consistency_score": semantic_consistency_score,
+        "semantic_segments": semantic_segments,
         "entity_map": entity_map,
-        "event_segments": event_segments,
-        "summary": summary
     }
-    print("Semantic Analysis Output:")
+    print(f"Semantic Analysis Output: {semantic_output}")
 
     return semantic_output

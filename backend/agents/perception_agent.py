@@ -94,12 +94,24 @@ async def run(input_data: dict) -> dict:
         out = model.generate(**inputs)
         caption = processor.decode(out[0], skip_special_tokens=True)
         object_tags.append([caption])
-        print('caption:', caption)
+        print('caption was:', caption)
+
+    unique_tags = set()
+    for tags in object_tags:
+        unique_tags.update(tags[0].split())
+    print('unique_tags:', unique_tags)
+
+    unique_tags_without_stopwords = set()
+    stopwords = set(["a", "an", "the", "is", "are", "to", "and", "of"])
+    for tag in unique_tags:
+        if tag.lower() not in stopwords:
+            unique_tags_without_stopwords.add(tag)
 
     perception_data = {
         "features": {
             "visual_embeddings": visual_embeddings,
-            "object_tags": object_tags
+            "unique_tags": unique_tags_without_stopwords,
+            "semantic_tags": object_tags,
         },
         "motion_vectors": motion_vectors,
         "scene_changes": scene_changes,

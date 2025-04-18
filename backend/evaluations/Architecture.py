@@ -91,19 +91,22 @@ async def define_research_architecture(video_file="video.mp4"):
     return data_store
 
 async def  start_analysis (video_path,parsed_json):
+    print(f"Starting analysis for video: {video_path}")
     # Example usage
     input_data = {
-        "video_file": "video.mp4",
-        "prompt": parsed_json["prompt"],
+        "video_file": video_path,
+        "prompt": parsed_json["generation_prompt"],
     }
-    frames = await ingest_video(input_data)
+
+    frames = await ingest_video(input_data,parsed_json["target_frame_rate"])
     perception_data = await extract_perception(frames)
 
     temporal_input = {
     "video_frames": frames["video_frames"],
     "motion_vectors": perception_data["motion_vectors"],
     "visual_embeddings": perception_data["features"]["visual_embeddings"],
-    "object_tags": perception_data["features"]["object_tags"],
+    "semantic_tags": perception_data["features"]["semantic_tags"],
+    "unique_tags": perception_data["features"]["unique_tags"],
 }
 
     temporal_data = await eval_temporal(temporal_input)
@@ -113,14 +116,16 @@ async def  start_analysis (video_path,parsed_json):
     "motion_vectors": perception_data["motion_vectors"],
     "scene_transitions": temporal_data["scene_transitions"],
     "semantic_consistency_score": semantic_data["semantic_consistency_score"],
-    "event_segments" : semantic_data["event_segments"],
+    "semantic_tags": perception_data["features"]["semantic_tags"],
+    "motion_vectors": perception_data["motion_vectors"],
     }
 
     dynamics_data = await eval_dynamics(dynamic_robustness_input)
 
     generalisation_input = {
-    "captions": semantic_data["captions"],
-    "event_segments": semantic_data["event_segments"],
+    "generation_prompt": input_data["prompt"],   
+    "unique_tags": perception_data["features"]["unique_tags"],
+    "semantic_tags": perception_data["features"]["semantic_tags"],
     "semantic_consistency_score": semantic_data["semantic_consistency_score"],
     "visual_embeddings": perception_data["features"]["visual_embeddings"]
 }
@@ -133,30 +138,16 @@ async def  start_analysis (video_path,parsed_json):
     "generalisation_score": generalised_data["generalisation_score"],
     "overfitting_warning": generalised_data["overfitting_warning"],
     "generalisation_analysis": generalised_data["analysis"],
-    "semantic_summary": semantic_data["summary"],
     "dynamics_analysis": dynamics_data["analysis"]
     }
 
     reasoning_data =await reasoning_agent(reasoning_input)
 
-    reporting_input = {
-    "video_source": "video.mp4",  # optional metadata
-    "temporal_output": temporal_data,
-    "semantic_output": semantic_data,
-    "dynamics_output": dynamics_data,
-    "generalisation_output": generalised_data,
-    "reasoning_output": reasoning_data
-    }
-
-
-    reporting_data =await reporting_agent(reporting_input)
-    # print(f"Output data: {reporting_data}")
     all_agents_data= {
         "temporal_analysis": temporal_data,
         "semantic_analysis": semantic_data,
         "dynamics_robustness": dynamics_data,
         "generalization": generalised_data,
         "reasoning": reasoning_data,
-        "reporting": reporting_data
     }
     return all_agents_data

@@ -1,6 +1,6 @@
 export const DefaultEvaluationCriteria = {
   generation_prompt: "A tiger walking through a jungle",
-  frame_sampling_rate: 2,
+  target_frame_rate: 2,
   pipeline_mode: "bus", // One of: bus, ring, star , tree 
   report_format: "detailed", // One of: minimal, detailed, verbose, pdf
   criteria : {

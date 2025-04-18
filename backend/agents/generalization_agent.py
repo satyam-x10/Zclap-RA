@@ -23,40 +23,59 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import Counter
 
-async def run(input_data: dict) -> dict:
-    captions = input_data.get("captions", [])
-    event_segments = input_data.get("event_segments", [])
-    semantic_score = input_data.get("semantic_consistency_score", 1.0)
-    visual_embeddings = input_data.get("visual_embeddings", [])
+import numpy as np
+from collections import Counter
+from sklearn.metrics.pairwise import cosine_similarity
 
-    if not captions or not event_segments or not visual_embeddings:
+async def run(input_data: dict) -> dict:
+
+    sentences = input_data.get("semantic_tags", [])
+    semantic_score = float(input_data.get("semantic_consistency_score", 1.0))
+    visual_embeddings = input_data.get("visual_embeddings", [])
+    prompt = input_data.get("generation_prompt", "").lower()
+    prompt= set(prompt.replace(',', '').replace('.', '').split())
+    unique_tags = input_data.get("unique_tags", set())
+
+    print('prompt:', prompt)
+    print('unique_tags:', unique_tags)
+
+    if not sentences or not visual_embeddings:
         raise ValueError("Missing required input fields")
 
+    # Flatten semantic captions
+    flat_captions = [cap[0].lower() for cap in sentences if cap]
+
     # 1. Diversity Index: Unique captions / total captions
-    unique_captions = list(set(captions))
-    diversity_index = round(len(unique_captions) / len(captions), 4)
+    unique_captions = list(set(flat_captions))
+    diversity_index = round(len(unique_captions) / len(flat_captions), 4)
 
-    # 2. Caption Distribution
-    caption_freq = Counter(captions)
-    most_common_caption, repeat_count = caption_freq.most_common(1)[0]
-    repetition_ratio = repeat_count / len(captions)
+    # 2. Caption Repetition Ratio
+    caption_freq = Counter(flat_captions)
+    most_common_sentence, repeat_count = caption_freq.most_common(1)[0]
+    repetition_ratio = repeat_count / len(flat_captions)
 
-    # 3. Coverage: extract top entities or key terms from event descriptions
-    coverage_terms = list(set(seg["event"] for seg in event_segments))
-
-    # 4. Visual embedding spread: cosine variance as generalization marker
+    # 3. Visual Embedding Variability
     embeddings = np.array(visual_embeddings)
-    embedding_diffs = [
-        cosine_similarity([embeddings[i]], [embeddings[i+1]])[0][0]
-        for i in range(len(embeddings) - 1)
-    ]
-    visual_variability = 1 - np.mean(embedding_diffs) if embedding_diffs else 0.0
+    if len(embeddings.shape) == 1:
+        embeddings = embeddings.reshape(1, -1)
+    elif len(embeddings.shape) == 2 and embeddings.shape[0] < 2:
+        visual_variability = 0.0
+    else:
+        diffs = [
+            cosine_similarity([embeddings[i]], [embeddings[i + 1]])[0][0]
+            for i in range(len(embeddings) - 1)
+        ]
+        visual_variability = 1 - np.mean(diffs) if diffs else 0.0
 
-    # 5. Heuristic Scoring
+    # 4. Tag-Prompt Overlap: fraction of unique_tags found in the prompt
+    tag_matches = [tag for tag in prompt if tag in unique_tags ]
+
+    # 5. Heuristic Generalization Score
     generalisation_score = (
-        0.4 * (1 - repetition_ratio) +
-        0.3 * diversity_index +
-        0.3 * visual_variability
+        0.25 * (1 - repetition_ratio) +
+        0.25 * diversity_index +
+        0.2 * visual_variability +
+        0.1 * semantic_score  # scaled since it's already 0–1
     )
     generalisation_score = round(min(1.0, max(0.0, generalisation_score)), 4)
 
@@ -70,16 +89,14 @@ async def run(input_data: dict) -> dict:
         "Poor generalization — high redundancy or overfitting."
     )
 
-    generalisation_output = {
+    return {
         "generalisation_score": generalisation_score,
         "diversity_index": diversity_index,
         "repetition_ratio": round(repetition_ratio, 4),
-        "coverage": coverage_terms,
         "visual_variability": round(visual_variability, 4),
+        "semantic_score": round(semantic_score, 4),
+        "matched_tags": tag_matches,
         "overfitting_warning": overfitting_warning,
-        "analysis": analysis
+        "analysis": analysis,
+        "most_common_sentence": most_common_sentence,
     }
-
-    print("Generalization Analysis:")
-
-    return generalisation_output

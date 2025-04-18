@@ -24,7 +24,6 @@ async def run(input_data: dict) -> dict:
     frames = input_data.get("video_frames", [])
     motion_vectors = input_data.get("motion_vectors", [])
     embeddings = input_data.get("visual_embeddings", [])
-    object_tags = input_data.get("object_tags", [])
 
     # print("Input Data:", input_data)
 
@@ -45,21 +44,7 @@ async def run(input_data: dict) -> dict:
     # Scene Transitions by embedding jump
     embedding_jumps = [1 - similarities[i] for i in range(len(similarities))]
     scene_transitions = [i+1 for i, val in enumerate(embedding_jumps) if val > 0.4]  # 0.4 is an empirical threshold
-
-    # Semantic Drift
-    tag_sequence = [tags[0] if tags else "" for tags in object_tags]
-    semantic_segments = []
-    prev_tag = None
-    segment_start = 0
-    for idx, tag in enumerate(tag_sequence):
-        if tag != prev_tag:
-            if prev_tag is not None:
-                semantic_segments.append({"start": segment_start, "end": idx-1, "tag": prev_tag})
-            segment_start = idx
-            prev_tag = tag
-    if prev_tag:
-        semantic_segments.append({"start": segment_start, "end": len(tag_sequence)-1, "tag": prev_tag})
-
+    
     temporal_output = {
         "temporal_coherence": coherence_score,
         "motion_statistics": {
@@ -68,7 +53,6 @@ async def run(input_data: dict) -> dict:
             "spike_frames": motion_spikes
         },
         "scene_transitions": scene_transitions,
-        "semantic_drift": semantic_segments
     }
     print("Temporal Output:")
     
