@@ -14,11 +14,11 @@ from agents.extractors.perception_agent import run as extract_perception
 # Actual agent function mapping
 Primary_agents = {
     "video_ingestion_agent": ingest_video,               # Step 1: Extract frames from video
-    "temporal_analysis_agent": eval_temporal,            # Step 2: Analyze sequence/timing of frames
-    "semantic_analysis_agent": eval_semantic,            # Step 3: Extract high-level meaning (objects, scenes, actions)
-    "perception_agent": extract_perception,              # Step 4: Evaluate perception (attention, emotion, saliency)
-    "dynamics_robustness_agent": eval_dynamics,          # Step 5: Analyze motion stability / dynamic consistency
-    "generalization_agent": eval_generalization          # Step 6: Assess if model can generalize to other contexts
+    "perception_agent": extract_perception,              # Step 2: Generate embeddings, semantic tags, motion
+    "semantic_analysis_agent": eval_semantic,            # Step 3: Uses semantic tags
+    "temporal_analysis_agent": eval_temporal,            # Step 4: Uses frame sequence + embeddings
+    "dynamics_robustness_agent": eval_dynamics,          # Step 5: Uses motion + scene change
+    "generalization_agent": eval_generalization          # Step 6: Uses all data to assess generalization
 }
 
 
