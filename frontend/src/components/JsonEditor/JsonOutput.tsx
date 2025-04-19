@@ -4,19 +4,8 @@ import { DefaultEvaluationCriteria } from "../../utils/Constants";
 import { useAppContext } from "../../context/AppContext";
 
 const JsonOutput = () => {
-  const { fileData, setFormData, setJsonData } = useAppContext();
-
-  const [editorValue, setEditorValue] = useState(
-    JSON.stringify(DefaultEvaluationCriteria(fileData), null, 2),
-  );
-
-  useEffect(() => {
-    setFormData(DefaultEvaluationCriteria(fileData));
-    setEditorValue(
-      JSON.stringify(DefaultEvaluationCriteria(fileData), null, 2),
-    );
-    setJsonData(DefaultEvaluationCriteria(fileData));
-  }, [fileData]);
+  const { editorValue } =
+    useAppContext();
 
   return (
     <div className="editor-content" style={{ flex: 1 }}>

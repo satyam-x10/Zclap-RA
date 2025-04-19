@@ -20,7 +20,7 @@ ChartJS.register(
   Legend,
 );
 
-const Result = ({ response }) => {
+const Result = () => {
   const [tab, setTab] = useState("config");
 
   const { jsonData, fileData, analysis } = response;

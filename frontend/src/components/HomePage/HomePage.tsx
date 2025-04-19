@@ -3,17 +3,10 @@ import ConfigAndFilePicker from "../JsonEditor/JsonEditor";
 import "./HomePage.css";
 import Result from "../Research/Result";
 import { useAppContext } from "../../context/AppContext";
-import { useAppFunctions } from "../../hook/useAppFunctions";
+import { useAppFunctions } from "../../hooks/useAppFunctions";
 
 const HomePage = () => {
-  const {
-    setJsonData,
-    fileData,
-    setFileData,
-    haveResults,
-    responseData,
-    loading,
-  } = useAppContext();
+  const { haveResults, loading } = useAppContext();
   const { handleNextStep } = useAppFunctions();
 
   return (
@@ -31,7 +24,7 @@ const HomePage = () => {
           </button>
         </div>
       )}
-      {haveResults && <Result response={responseData} />}
+      {haveResults && <Result />}
     </div>
   );
 };

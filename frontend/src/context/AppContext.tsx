@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useEffect,
 } from "react";
 import { DefaultEvaluationCriteria } from "../utils/Constants";
 
@@ -22,6 +23,8 @@ interface AppContextType {
   setLoading: Dispatch<SetStateAction<boolean>>;
   formData: any;
   setFormData: Dispatch<SetStateAction<any>>;
+  editorValue: any;
+  setEditorValue: Dispatch<SetStateAction<any>>;
 }
 
 // Create context with default (undefined will force provider use)
@@ -32,10 +35,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [jsonData, setJsonData] = useState<any>(null);
   const [fileData, setFileData] = useState<any>({});
   const [formData, setFormData] = useState(DefaultEvaluationCriteria(fileData));
-
+  const [editorValue, setEditorValue] = useState<any>(null);
   const [haveResults, setHaveResults] = useState(false);
   const [responseData, setResponseData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setFormData(DefaultEvaluationCriteria(fileData));
+    setEditorValue(
+      JSON.stringify(DefaultEvaluationCriteria(fileData), null, 2),
+    );
+    setJsonData(DefaultEvaluationCriteria(fileData));
+  }, [fileData]);
 
   return (
     <AppContext.Provider
@@ -52,6 +63,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setLoading,
         formData,
         setFormData,
+        editorValue,
+        setEditorValue,
       }}
     >
       {children}

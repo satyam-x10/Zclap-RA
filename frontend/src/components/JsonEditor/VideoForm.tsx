@@ -1,13 +1,16 @@
 import React from "react";
-
-const VideoForm = ({
-  formData,
-  handleInputChange,
+import { useAppContext } from "../../context/AppContext";
+import useForm from "../../hooks/useForm";
+import {
+  ALL_AGENTS,
   PIPELINE_MODES,
   REPORT_FORMATS,
-  ALL_AGENTS,
-  handleAgentToggle,
-}) => {
+} from "../../utils/Constants";
+
+const UserForm = () => {
+  const { formData } = useAppContext();
+  const { handleInputChange, handleAgentToggle } = useForm();
+
   return (
     <div>
       <div className="form-group">
@@ -112,4 +115,4 @@ const VideoForm = ({
   );
 };
 
-export default VideoForm;
+export default UserForm;
