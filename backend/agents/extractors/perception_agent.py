@@ -8,6 +8,7 @@ from PIL import Image
 from torchvision.models import resnet18, ResNet18_Weights
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from data.Config import config
+from  utils.constant import STOPWORDS
 
 agent_manifest = {
     "agent_name": "perception_agent",
@@ -81,10 +82,9 @@ async def run() -> None:
         print(f"[Frame {idx}] Caption: {caption}")
 
     # -- Unique Tags Filtering
-    stopwords = {"a", "an", "the", "is", "are", "to", "and", "of"}
     unique_tags = set()
     for tags in semantic_tags:
-        unique_tags.update(word.lower() for word in tags[0].split() if word.lower() not in stopwords)
+        unique_tags.update(word.lower() for word in tags[0].split() if word.lower() not in STOPWORDS)
 
     # -- Save to config
     config.analysis.perception_agent = {

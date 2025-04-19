@@ -10,13 +10,14 @@ from agents.extractors.redundancy_agent import run as redundancy_agent
 from agents.extractors.transition_agent import run as transition_agent
 
 # Actual agent function mapping
-Secondary_agents = {    
-    "aesthetic_agent": aesthetic_agent,
-    "motion_agent": motion_agent,
-    "caption_alignment_agent": caption_alignment_agent,
-    "redundancy_agent": redundancy_agent,
-    "transition_agent": transition_agent,
+Secondary_agents = {
+    "motion_agent": motion_agent,                        # Needs motion_vectors
+    "transition_agent": transition_agent,                # Needs scene_transitions or hist diff
+    "caption_alignment_agent": caption_alignment_agent,  # Needs captions vs. frames/prompt
+    "redundancy_agent": redundancy_agent,                # Needs tags/embeddings to detect repeats
+    "aesthetic_agent": aesthetic_agent,                  # Can run last; general visual eval
 }
+
 
 def run_secondary_agents():
     # Run all agents in the primary category
