@@ -78,3 +78,51 @@
 .error-icon {
   margin-right: 0.5rem;
 }
+
+
+.json-editor-container {
+  padding: 20px;
+}
+
+.editor-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+.not-editable {
+  background-color: #460f0f;
+  color: #fdfdfd;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: not-allowed;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+input,
+select,
+textarea {
+  color: #000000;
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.agent-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}

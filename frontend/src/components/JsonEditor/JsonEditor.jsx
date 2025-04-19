@@ -2,103 +2,191 @@ import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import "./JsonEditor.css";
 import { DefaultEvaluationCriteria } from "../../utils/Constants";
+import FilePicker from "../FilePicker/FilePicker";
+import {
+  PIPELINE_MODES,
+  REPORT_FORMATS,
+  ALL_AGENTS,
+} from "../../utils/Constants";
 
-export default function JsonEditor({setJsonData}) {
-  const onChange = (updatedJson) => {
-    console.log("Updated JSON:", updatedJson);
-  };
-
-  const [json, setJson] = useState(DefaultEvaluationCriteria);
-  const [editorValue, setEditorValue] = useState(JSON.stringify(json, null, 2));
-  const [error, setError] = useState(null);
+export default function JsonEditor({ setJsonData, setFileData, fileData }) {
+  const [formData, setFormData] = useState(DefaultEvaluationCriteria(fileData));
+  const [editorValue, setEditorValue] = useState(
+    JSON.stringify(DefaultEvaluationCriteria(fileData), null, 2)
+  );
 
   useEffect(() => {
-    if (DefaultEvaluationCriteria) {
-      setJson(DefaultEvaluationCriteria);
-      setJsonData(DefaultEvaluationCriteria);
-      setEditorValue(JSON.stringify(DefaultEvaluationCriteria, null, 2));
-    }
-  }, [DefaultEvaluationCriteria]);
+    setFormData(DefaultEvaluationCriteria(fileData));
+    setEditorValue(
+      JSON.stringify(DefaultEvaluationCriteria(fileData), null, 2)
+    );
+    setJsonData(DefaultEvaluationCriteria(fileData));
+  }, [fileData]);
 
-  const handleEditorChange = (value) => {
-    setEditorValue(value);
-    try {
-      if (value) {
-        const parsed = JSON.parse(value);
-        setJson(parsed);
-        setJsonData(parsed);
-        setError(null);
-        onChange && onChange(parsed);
-      }
-    } catch (e) {
-      setError(e.message);
-    }
+  const updateJson = (updated) => {
+    setFormData(updated);
+    const updatedStr = JSON.stringify(updated, null, 2);
+    setEditorValue(updatedStr);
+    setJsonData(updated);
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(editorValue);
-    const button = document.getElementById("copy-button");
-    const originalText = button.innerText;
-    button.innerText = "Copied!";
-    setTimeout(() => {
-      button.innerText = originalText;
-    }, 2000);
+  const handleInputChange = (key, value) => {
+    const updated = { ...formData, [key]: value };
+    updateJson(updated);
   };
 
-  const formatJson = () => {
-    try {
-      const parsed = JSON.parse(editorValue);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setEditorValue(formatted);
-    } catch (e) {
-      setError(e.message);
-    }
+  const handleAgentToggle = (category, agent) => {
+    const currentAgents = formData.agents[category] || [];
+    const isSelected = currentAgents.includes(agent);
+
+    const updatedAgents = isSelected
+      ? currentAgents.filter((a) => a !== agent)
+      : [...currentAgents, agent];
+
+    const updated = {
+      ...formData,
+      agents: {
+        ...formData.agents,
+        [category]: updatedAgents,
+      },
+    };
+
+    updateJson(updated);
   };
 
   return (
-    <div className="json-editor-container">
-      <div className="editor-header">
-        <h2 className="editor-title">JSON Editor</h2>
-        {/* give two switching option as json or form */}
-        <div className="editor-actions">
-          <button
-            id="copy-button"
-            className="action-button"
-            onClick={copyToClipboard}
-            title="Copy to clipboard"
-          >
-            Copy
-          </button>
-          <button
-            className="action-button"
-            onClick={formatJson}
-            title="Format JSON"
-          >
-            Format
-          </button>
+    <div
+      className="json-editor-container"
+      style={{ display: "flex", flexDirection: "row", gap: "20px" }}
+    >
+      {/* FORM SIDE */}
+      <div className="editor-form" style={{ flex: 1 }}>
+        <h2 className="editor-title">Evaluation Config</h2>
+        <div>
+          <div className="form-group">
+            <label>Video File</label>
+            <input
+              className="not-editable"
+              type="text"
+              placeholder="Select a video file"
+              value={formData.video_file}
+              onChange={(e) => handleInputChange("video_file", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Prompt</label>
+            <textarea
+              placeholder="Enter the prompt that was used to generate the video"
+              value={formData.prompt}
+              onChange={(e) => handleInputChange("prompt", e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Frame Rate</label>
+            <input
+              type="number"
+              placeholder="Enter the frame rate , default is 2"
+              value={formData.frame_rate}
+              onChange={(e) =>
+                handleInputChange("frame_rate", parseInt(e.target.value) || 0)
+              }
+            />
+          </div>
+          <div className="form-group">
+            <label>Pipeline Mode</label>
+            <select
+              value={formData.pipeline_mode}
+              onChange={(e) =>
+                handleInputChange("pipeline_mode", e.target.value)
+              }
+            >
+              {PIPELINE_MODES.map((mode) => (
+                <option key={mode} value={mode}>
+                  {mode}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Report Format</label>
+            <select
+              value={formData.report_format}
+              onChange={(e) =>
+                handleInputChange("report_format", e.target.value)
+              }
+            >
+              {REPORT_FORMATS.map((format) => (
+                <option key={format} value={format}>
+                  {format}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Select Agents by Category</label>
+            {Object.entries(ALL_AGENTS).map(([category, agents]) => (
+              <div key={category} style={{ marginBottom: "10px" }}>
+                <strong style={{ textTransform: "capitalize" }}>
+                  {category.replace(/_/g, " ")}
+                </strong>
+                <div className="agent-checkbox-group">
+                  {agents.map((agent) => {
+                    const isPrimary = category === "primary_agent";
+
+                    return (
+                      <label
+                        key={agent}
+                        style={{
+                          display: "block",
+                          marginLeft: "10px",
+                          opacity: isPrimary ? 0.6 : 1,
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={
+                            isPrimary
+                              ? true
+                              : formData.agents[category]?.includes(agent)
+                          }
+                          disabled={isPrimary}
+                          onChange={() => {
+                            if (!isPrimary) {
+                              handleAgentToggle(category, agent);
+                            }
+                          }}
+                        />
+
+                        {agent}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+        <FilePicker setFileData={setFileData} />
       </div>
 
-      <div className="editor-content">
+      {/* READ-ONLY JSON EDITOR */}
+      <div className="editor-content" style={{ flex: 1 }}>
+        <h2 className="editor-title">Live JSON Preview</h2>
         <Editor
-          // height="400px"
           defaultLanguage="json"
           value={editorValue}
           theme="vs-dark"
-          onChange={handleEditorChange}
           options={{
+            readOnly: true,
             minimap: { enabled: false },
-            fontSize: 20,
+            fontSize: 16,
             scrollBeyondLastLine: false,
             folding: true,
             lineNumbers: "off",
             renderLineHighlight: "all",
             tabSize: 2,
-            formatOnPaste: true,
             automaticLayout: true,
-            // add gap betwee n lines
-            lineDecorationsWidth: 0,
-            lineHeight: 30,            
+            lineHeight: 26,
             scrollbar: {
               vertical: "auto",
               horizontal: "auto",
@@ -106,20 +194,6 @@ export default function JsonEditor({setJsonData}) {
           }}
         />
       </div>
-
-      {error ? (
-        <div className="editor-footer error">
-          <span className="error-icon">⚠️</span> {error}
-        </div>
-      ) : (
-        <div className="editor-footer">
-          <span className="status-text">Valid JSON</span>
-          <span className="json-stats">
-            {Object.keys(json).length} top-level keys | {editorValue.length}{" "}
-            characters
-          </span>
-        </div>
-      )}
     </div>
   );
 }

@@ -7,13 +7,13 @@ import Result from "../Research/Result";
 
 const HomePage = () => {
   const [jsonData, setJsonData] = React.useState<any>(null);
-  const [fileData, setFileData] = React.useState<any>(null);
+  const [fileData, setFileData] = React.useState<any>({});
   const [haveResults, setHaveResults] = React.useState(false);
   const [responseData, setResponseData] = React.useState<any>(null);
 
   const [loading, setLoading] = React.useState(false);
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     console.log("JSON Data:", jsonData);
     console.log("File Data:", fileData);
 
@@ -21,7 +21,7 @@ const HomePage = () => {
     setResponseData(null);
     setLoading(true);
 
-    fetchVideoData({ jsonData, fileData })
+    await fetchVideoData({ jsonData, fileData })
       .then((data) => {
         console.log("Fetched video data:", data);
         setResponseData(data);
@@ -39,10 +39,7 @@ const HomePage = () => {
         <div>
           <div className="homepage-container">
             <div className="half-container">
-              <JsonEditor setJsonData={setJsonData} />
-            </div>
-            <div className="half-container">
-              <FilePicker setFileData={setFileData} />
+              <JsonEditor setJsonData={setJsonData} setFileData={setFileData} fileData={fileData} />
             </div>
           </div>
 

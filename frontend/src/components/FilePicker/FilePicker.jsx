@@ -4,7 +4,7 @@ import { ProjectDescriptionPrimary, ProjectDescriptionSecondary } from '../../ut
 import EditorGuide from '../UI/EditorGuide';
 
 export default function FilePicker({setFileData}) {
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState();
   const [preview, setPreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef(null);
@@ -55,8 +55,8 @@ export default function FilePicker({setFileData}) {
     handleFile(e.dataTransfer.files[0]);
   };
 
-  const handleSelectFile = (e) => handleFile(e.target.files[0]);
-
+  const handleSelectFile = (e) => {e.preventDefault();handleFile(e.target.files[0]);
+}
   const formatFileSize = (bytes) => {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
@@ -148,7 +148,7 @@ export default function FilePicker({setFileData}) {
       </div>
 
       {/* BOTTOM SECTION - DESCRIPTION BOX */}
-      <div className="file-description-box">
+      {/* <div className="file-description-box">
         <h3 className="description-title">Project Description</h3>
         <p className="description-text">
           {ProjectDescriptionPrimary}
@@ -157,7 +157,7 @@ export default function FilePicker({setFileData}) {
           {ProjectDescriptionSecondary}
         </p>
       </div>      
-           
+            */}
     </div>
   );
 }
