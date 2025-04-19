@@ -1,30 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './FilePicker.css'; // We'll define this CSS file content below
-import { ProjectDescriptionPrimary, ProjectDescriptionSecondary } from '../../utils/Constants';
-import EditorGuide from '../UI/EditorGuide';
+import React, { useState, useRef, useEffect } from "react";
+import "./FilePicker.css"; // We'll define this CSS file content below
+import {
+  ProjectDescriptionPrimary,
+  ProjectDescriptionSecondary,
+} from "../../utils/Constants";
+import EditorGuide from "../UI/EditorGuide";
 
-export default function FilePicker({setFileData}) {
+export default function FilePicker({ setFileData }) {
   const [file, setFile] = useState();
   const [preview, setPreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef(null);
   const videoRef = useRef(null);
 
-  const agentTypes = {
-    ingestion: ['video_ingestion_agent'],
-    analysis: ['temporal_analysis_agent', 'semantic_analysis_agent', 'dynamics_robustness_agent', 'generalization_agent'],
-    feature_extractor: ['perception_agent'],
-    synthesis: ['reasoning_agent'],
-    reporting: ['reporting_agent'],
-    controller: ['coordinator_agent'],
-  };
-
   useEffect(() => {
     if (!file) {
       setPreview(null);
       return;
     }
-    if (file.type.startsWith('video/')) {
+    if (file.type.startsWith("video/")) {
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
@@ -34,19 +28,19 @@ export default function FilePicker({setFileData}) {
   const handleFile = (f) => {
     if (!f) return;
     const maxSize = 1024 * 1024 * 1024; // 1 GB
-    const isValidType = f.type.startsWith('video/');
+    const isValidType = f.type.startsWith("video/");
     if (f.size <= maxSize && isValidType) {
       setFile(f);
       setFileData(f); // Pass the file to parent component
     } else {
-      alert('File must be a video and less than 1GB.');
+      alert("File must be a video and less than 1GB.");
     }
   };
 
   const handleDragEvents = (e, type) => {
     e.preventDefault();
-    if (type === 'enter') setIsDragging(true);
-    else if (type === 'leave') setIsDragging(false);
+    if (type === "enter") setIsDragging(true);
+    else if (type === "leave") setIsDragging(false);
   };
 
   const handleDrop = (e) => {
@@ -55,12 +49,14 @@ export default function FilePicker({setFileData}) {
     handleFile(e.dataTransfer.files[0]);
   };
 
-  const handleSelectFile = (e) => {e.preventDefault();handleFile(e.target.files[0]);
-}
+  const handleSelectFile = (e) => {
+    e.preventDefault();
+    handleFile(e.target.files[0]);
+  };
   const formatFileSize = (bytes) => {
-    if (bytes < 1024) return bytes + ' B';
-    else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
-    else return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    if (bytes < 1024) return bytes + " B";
+    else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+    else return (bytes / (1024 * 1024)).toFixed(2) + " MB";
   };
 
   return (
@@ -69,16 +65,18 @@ export default function FilePicker({setFileData}) {
       <div className="file-picker-container">
         <div className="file-picker-header">
           <h2 className="file-picker-title">Video Upload</h2>
-          <p className="file-picker-subtitle">Select or drag a video file to upload</p>
+          <p className="file-picker-subtitle">
+            Select or drag a video file to upload
+          </p>
         </div>
 
         {!file ? (
           <div
-            className={`file-picker-dropzone ${isDragging ? 'dragging' : ''}`}
+            className={`file-picker-dropzone ${isDragging ? "dragging" : ""}`}
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
-            onDragEnter={(e) => handleDragEvents(e, 'enter')}
-            onDragLeave={(e) => handleDragEvents(e, 'leave')}
+            onDragEnter={(e) => handleDragEvents(e, "enter")}
+            onDragLeave={(e) => handleDragEvents(e, "leave")}
             onClick={() => inputRef.current.click()}
           >
             <input
@@ -91,16 +89,28 @@ export default function FilePicker({setFileData}) {
 
             <div className="file-picker-icon">
               {/* Video Icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polygon points="23 7 16 12 23 17 23 7"></polygon>
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
               </svg>
             </div>
 
             <p className="file-picker-prompt">
-              {isDragging ? 'Drop video here' : 'Click or drag a video file'}
+              {isDragging ? "Drop video here" : "Click or drag a video file"}
             </p>
-            <p className="file-picker-hint">Supports MP4, WebM, MOV (max 1GB)</p>
+            <p className="file-picker-hint">
+              Supports MP4, WebM, MOV (max 1GB)
+            </p>
           </div>
         ) : (
           <div className="file-preview-container">
@@ -118,13 +128,27 @@ export default function FilePicker({setFileData}) {
             <div className="file-info-container">
               <div className="file-info-content">
                 <div className="file-details">
-                  <h3 className="file-name" title={file.name}>{file.name}</h3>
-                  <p className="file-metadata">{file.type} • {formatFileSize(file.size)}</p>
+                  <h3 className="file-name" title={file.name}>
+                    {file.name}
+                  </h3>
+                  <p className="file-metadata">
+                    {file.type} • {formatFileSize(file.size)}
+                  </p>
                 </div>
 
                 <div className="file-actions">
-                  <button onClick={() => inputRef.current.click()} className="btn btn-secondary">Replace</button>
-                  <button onClick={() => setFile(null)} className="btn btn-danger">Remove</button>
+                  <button
+                    onClick={() => inputRef.current.click()}
+                    className="btn btn-secondary"
+                  >
+                    Replace
+                  </button>
+                  <button
+                    onClick={() => setFile(null)}
+                    className="btn btn-danger"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             </div>
@@ -140,8 +164,19 @@ export default function FilePicker({setFileData}) {
         )}
 
         <div className="file-size-info">
-          <svg xmlns="http://www.w3.org/2000/svg" className="info-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="info-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           Maximum file size: 1GB
         </div>

@@ -13,7 +13,6 @@ export const DefaultEvaluationCriteria = (fileData) => {
   };
 };
 
-
 export const PIPELINE_MODES = ["default", "parallel", "sequential", "custom"];
 export const REPORT_FORMATS = ["summary", "detailed", "diagnostic", "pdf"];
 
@@ -24,20 +23,17 @@ export const ALL_AGENTS = {
     "temporal_analysis_agent",
     "semantic_analysis_agent",
     "dynamics_robustness_agent",
-    "generalization_agent"
+    "generalization_agent",
   ],
   secondary_agent: [
     "aesthetic_agent",
     "motion_agent",
     "redundancy_agent",
     "transition_agent",
-    "caption_alignment_agent"
+    "caption_alignment_agent",
   ],
-  meta_agents: [
-    "reasoning_agent",
-    "reporting_agent"
-  ]
-}
+  meta_agents: ["reasoning_agent", "reporting_agent"],
+};
 
 export const ProjectDescriptionPrimary =
   "After uploading the video, you can proceed to the next step where this file will be used for analysis or processing. This tool supports temporal segmentation, AI-based labeling, and preview playback directly from the browser. Please ensure your video is trimmed and properly formatted.";

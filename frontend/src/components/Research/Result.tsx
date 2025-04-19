@@ -17,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const Result = ({ response }) => {
@@ -33,7 +33,7 @@ const Result = ({ response }) => {
 
     // Find the score in the value object
     const scoreKey = Object.keys(value).find(
-      (k) => k.includes("score") || k.includes("coherence")
+      (k) => k.includes("score") || k.includes("coherence"),
     );
     if (scoreKey) {
       // Format the key for display (remove _analysis suffix, replace underscores with spaces, capitalize)
@@ -282,12 +282,27 @@ const Result = ({ response }) => {
           </button>
         ))}
       </div>
-      <button onClick={()=>window.location.reload()} style={{float:"right",position:"relative",top:'0px',right:'0px'}}>home</button>
+      <button
+        onClick={() => window.location.reload()}
+        style={{
+          float: "right",
+          position: "relative",
+          top: "0px",
+          right: "0px",
+        }}
+      >
+        home
+      </button>
       <div className="tab-content">{renderTab()}</div>
       <style jsx>{`
         .result-container {
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-            Roboto, sans-serif;
+          font-family:
+            "Inter",
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
           max-width: 900px;
           margin: 0 auto;
           background-color: #ffffff;
