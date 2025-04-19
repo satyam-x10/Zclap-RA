@@ -9,10 +9,11 @@ import cv2
 import torch
 import torchvision.transforms as T
 from PIL import Image
-from torchvision.models import resnet18
+from torchvision.models import resnet18, ResNet18_Weights
 
 # Preload model once (ResNet for visual embeddings)
-resnet = resnet18(pretrained=True)
+resnet =resnet18(weights=ResNet18_Weights.DEFAULT)
+
 resnet.eval()
 transform = T.Compose([
     T.Resize((224, 224)),

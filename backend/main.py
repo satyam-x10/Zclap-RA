@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import Video
+from routers import Analysis
 
 app = FastAPI()
 
@@ -18,5 +18,10 @@ app.add_middleware(
 async def health_check():
     return {"status": "ok"}
 
+async def get_progress():
+    # Placeholder for progress logic
+    return {"progress": 50}  # Example progress value
+
 # Include routers
-app.include_router(Video.router, prefix="/api")
+app.include_router(Analysis.router, prefix="/api")
+

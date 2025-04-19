@@ -11,7 +11,7 @@ export const fetchVideoData = async (videoAndConfigData) => {
     formData.append("jsonData", JSON.stringify(videoAndConfigData.jsonData)); // Convert JSON to string
     formData.append("fileData", videoAndConfigData.fileData); // Raw File object
 
-    const res = await axios.post(`${BASE_URL}/video`, formData, {
+    const res = await axios.post(`${BASE_URL}/analyse`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

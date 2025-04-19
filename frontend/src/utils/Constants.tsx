@@ -9,8 +9,8 @@ export const DefaultEvaluationCriteria = (fileData) => {
     pipeline_mode: PIPELINE_MODES[0], // default
     report_format: REPORT_FORMATS[0], // summary
     agents: {
-      primary_agent: ALL_AGENTS.primary_agent, // fixed
-      secondary_agent: [],
+      primary_agents: ALL_AGENTS.primary_agents, // fixed
+      secondary_agents: [],
       meta_agents: [],
     },
   };
@@ -18,7 +18,7 @@ export const DefaultEvaluationCriteria = (fileData) => {
 
 
 export const ALL_AGENTS = {
-  primary_agent: [
+  primary_agents: [
     "video_ingestion_agent",
     "perception_agent",
     "temporal_analysis_agent",
@@ -26,7 +26,7 @@ export const ALL_AGENTS = {
     "dynamics_robustness_agent",
     "generalization_agent",
   ],
-  secondary_agent: [
+  secondary_agents: [
     "aesthetic_agent",
     "motion_agent",
     "redundancy_agent",

@@ -77,7 +77,7 @@ const UserForm = () => {
             </strong>
             <div className="agent-checkbox-group">
               {agents.map((agent) => {
-                const isPrimary = category === "primary_agent";
+                const isPrimary = category === "primary_agents";
 
                 return (
                   <label

@@ -1,15 +1,14 @@
 
 from evaluations.Architecture import start_analysis
+from utils.video_utils import extract_config
+from data.Config import config
 
-async def run_pipeline(video_path: str, parsed_json: str = ""):
-    print(f"Running pipeline for video: {video_path} ")
+async def run_analysis_pipeline():    
     
-    active_agents = []
+    extract_config()
 
-    for category, agents in parsed_json.get("criteria", {}).items():
-        for agent_name in agents:
-            active_agents.append(agent_name)
+    print(f"config mode: {config.__dict__}")
 
-    Research = await start_analysis(video_path,parsed_json)
+    analysis = await start_analysis()
 
-    return Research
+    return analysis
