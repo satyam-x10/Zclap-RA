@@ -1,10 +1,13 @@
+export const PIPELINE_MODES = ["default", "parallel", "sequential", "custom"];
+export const REPORT_FORMATS = ["summary", "detailed", "diagnostic", "pdf"];
+
 export const DefaultEvaluationCriteria = (fileData) => {
   return {
     video_file: fileData ? fileData.name : "Please upload a video file",
     prompt: "",
     frame_rate: "",
-    pipeline_mode: "",
-    report_format: "",
+    pipeline_mode: PIPELINE_MODES[0], // default
+    report_format: REPORT_FORMATS[0], // summary
     agents: {
       primary_agent: ALL_AGENTS.primary_agent, // fixed
       secondary_agent: [],
@@ -13,8 +16,6 @@ export const DefaultEvaluationCriteria = (fileData) => {
   };
 };
 
-export const PIPELINE_MODES = ["default", "parallel", "sequential", "custom"];
-export const REPORT_FORMATS = ["summary", "detailed", "diagnostic", "pdf"];
 
 export const ALL_AGENTS = {
   primary_agent: [
