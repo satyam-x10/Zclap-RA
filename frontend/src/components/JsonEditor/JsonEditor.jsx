@@ -69,7 +69,7 @@ export default function JsonEditor({ setJsonData, setFileData, fileData }) {
               className="not-editable"
               type="text"
               placeholder="Select a video file"
-              value={formData.video_file}
+              value={formData.video_file || ""}
               onChange={(e) => handleInputChange("video_file", e.target.value)}
             />
           </div>
