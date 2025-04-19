@@ -1,58 +1,50 @@
+# agents/meta/reasoning_agent.py
+
+from data.Config import config
+
 agent_manifest = {
     "agent_name": "reasoning_agent",
-    "purpose": "Synthesizes scores into insights and computes final score.",
-    
+    "purpose": "Synthesizes outputs from all agents to create a reasoning trace.",
 }
-async def run(input_data: dict) -> dict:
-    print("Running Reasoning Agent...", input_data)
 
-    # Core scores
-    temporal = float(input_data.get("temporal_coherence", 0.0))
-    semantic = float(input_data.get("semantic_consistency_score", 0.0))
-    dynamics = float(input_data.get("dynamics_robustness_score", 0.0))
-    general = float(input_data.get("generalisation_score", 0.0))
+async def run() -> None:
+    try:
+        temporal = config.analysis.temporal_analysis_agent.get("temporal_coherence", None)
+        semantic = config.analysis.semantic_analysis_agent.get("semantic_consistency_score", None)
+        dynamics = config.analysis.dynamics_robustness_agent.get("dynamics_robustness_score", None)
+        general = config.analysis.generalization_agent.get("generalisation_score", None)
+        caption_align = config.analysis.caption_alignment_agent.get("match_ratio", None)
+        redundancy = config.analysis.redundancy_agent.get("semantic_redundancy", None)
+        aesthetic = config.analysis.aesthetic_agent.get("aesthetic_score", None)
 
-    # Meta flags and text explanations
-    overfitting = input_data.get("overfitting_warning", False)
-    general_analysis = input_data.get("generalisation_analysis", "")
-    semantic_summary = input_data.get("semantic_summary", "Semantic performance not described.")
-    dynamics_analysis = input_data.get("dynamics_analysis", "Dynamics response unavailable.")
+        trace = []
 
-    # Weighted aggregate scoring
-    final_score = round(0.25 * temporal + 0.3 * semantic + 0.25 * dynamics + 0.2 * general, 4)
+        if temporal is not None:
+            trace.append(f"Temporal coherence is {temporal:.2f}, indicating {'smooth' if temporal > 0.8 else 'inconsistent'} transitions.")
+        if semantic is not None:
+            trace.append(f"Semantic consistency is {semantic:.2f}, suggesting {'stable alignment' if semantic > 0.7 else 'semantic drift'}.")
+        if dynamics is not None:
+            trace.append(f"Dynamics robustness score is {dynamics:.2f}, reflecting how stable the video remains under motion.")
+        if general is not None:
+            trace.append(f"Generalization score is {general:.2f}, showing how well the video avoids overfitting and redundancy.")
+        if caption_align is not None:
+            trace.append(f"Prompt-to-caption alignment is {caption_align:.2f}, indicating prompt relevance.")
+        if redundancy is not None:
+            trace.append(f"Semantic redundancy is {redundancy:.2f}, {'high' if redundancy > 0.6 else 'moderate or low'} repetition.")
+        if aesthetic is not None:
+            trace.append(f"Aesthetic score is {aesthetic:.2f}, which suggests visual {'appeal' if aesthetic > 0.7 else 'issues'}.")
 
-    # Verdict inference
-    if final_score > 0.85 and not overfitting:
-        verdict = "Coherent & Generalizable"
-    elif semantic > 0.8 and general < 0.5:
-        verdict = "Consistent but Repetitive"
-    elif semantic < 0.6 and dynamics < 0.6:
-        verdict = "Disjointed"
-    elif overfitting and general < 0.4:
-        verdict = "Overfitted & Narrow"
-    else:
-        verdict = "Mixed Consistency"
+        summary = " ".join(trace)
 
-    # Natural language explanation
-    explanation = (
-        f"🧠 Temporal Coherence: {temporal:.2f} | "
-        f"Semantic Score: {semantic:.2f} | "
-        f"Dynamics: {dynamics:.2f} | "
-        f"Generalization: {general:.2f}.\n"
-        f"{'⚠️ Overfitting detected. ' if overfitting else ''}"
-        f"Verdict: **{verdict}**."
-    )
-
-    # Final package
-    reasoning_output = {
-        "final_reasoning_score": final_score,
-        "verdict": verdict,
-        "explanation": explanation,
-        "full_breakdown": {
-            "semantic_summary": semantic_summary,
-            "dynamics_analysis": dynamics_analysis,
-            "generalisation_analysis": general_analysis
+        config.analysis.reasoning_agent = {
+            "reasoning_trace": trace,
+            "summary": summary
         }
-    }
 
-    return reasoning_output
+        print(f"[reasoning_agent] Summary generated.")
+    except Exception as e:
+        config.analysis.reasoning_agent = {
+            "reasoning_trace": [],
+            "summary": f"Reasoning failed: {str(e)}"
+        }
+        print(f"[reasoning_agent] Error: {e}")
