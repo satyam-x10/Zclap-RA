@@ -1,18 +1,6 @@
 agent_manifest = {
     "agent_name": "dynamics_robustness_agent",
-    "purpose": "Tests robustness under fast motion, lighting or angle variation.",
-    "agent_type": "analysis",
-    "input_format": ["video_frames"],
-    "output_format": ["dynamic_scene_handling_score"],
-    "dependencies": ["video_ingestion_agent"],
-    "supported_tasks": ["motion_robustness"],
-    "prompt_required": False,
-    "input_type_details": {
-        "video_frames": "List of video frame tensors"
-    },
-    "output_type_details": {
-        "dynamic_scene_handling_score": "Float between 0 and 1"
-    },  
+    "purpose": "Tests robustness under fast motion, lighting or angle variation.",     
 }
 
 

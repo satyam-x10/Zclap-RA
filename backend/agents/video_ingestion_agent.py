@@ -1,6 +1,11 @@
 import os
 import cv2
 
+agent_manifest = {
+    "agent_name": "video_ingestion_agent",
+    "agent_description": "Agent for ingesting video files and extracting frames.",
+}
+
 async def run(input_data: dict, target_frame_rate: int = 2) -> dict:
     video_path = input_data.get("video_file")
 

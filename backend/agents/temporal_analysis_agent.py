@@ -1,18 +1,7 @@
 agent_manifest = {
     "agent_name": "temporal_analysis_agent",
     "purpose": "Evaluates temporal coherence via motion smoothness and jitter detection.",
-    "agent_type": "analysis",
-    "input_format": ["video_frames"],
-    "output_format": ["temporal_coherence_score"],
-    "dependencies": ["video_ingestion_agent"],
-    "supported_tasks": ["optical_flow_analysis", "jitter_detection"],
-    "prompt_required": False,
-    "input_type_details": {
-        "video_frames": "List of video frames"
-    },
-    "output_type_details": {
-        "temporal_coherence_score": "Float between 0 and 1"
-    },
+    
 }
 
 import numpy as np

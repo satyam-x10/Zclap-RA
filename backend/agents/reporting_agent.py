@@ -1,5 +1,10 @@
 from datetime import datetime
 
+agent_manifest = {
+    "name": "reporting_agent",
+    "description": "Generates a final report based on the outputs from other agents.",
+}
+
 async def run(input_data: dict) -> dict:
     temporal = input_data["temporal_output"]
     semantic = input_data["semantic_output"]

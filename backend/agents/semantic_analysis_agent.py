@@ -1,24 +1,7 @@
 agent_manifest = {
     "agent_name": "semantic_analysis_agent",
     "purpose": "Analyzes visual-prompt alignment using vision-language models.",
-    "agent_type": "analysis",
-    "input_format": ["video_frames", "text_prompt", "semantic_tags", "visual_embeddings"],
-    "output_format": ["semantic_consistency_score", "semantic_segments", "entity_map", "summary"],
-    "dependencies": ["video_ingestion_agent"],
-    "supported_tasks": ["semantic_drift", "entity_tracking", "segment_summary"],
-    "prompt_required": True,
-    "input_type_details": {
-        "video_frames": "List of video frame tensors",
-        "text_prompt": "Prompt string",
-        "semantic_tags": "List of captions or tags per frame",
-        "visual_embeddings": "List of frame-wise image embeddings"
-    },
-    "output_type_details": {
-        "semantic_consistency_score": "Float between 0 and 1",
-        "semantic_segments": "List of segments with consistent semantic tags",
-        "entity_map": "Map of entities to their frame span",
-        "summary": "Generated summary based on semantic tags"
-    },
+    
 }
 
 import numpy as np
