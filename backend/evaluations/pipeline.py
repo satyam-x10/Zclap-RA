@@ -9,6 +9,4 @@ async def run_analysis_pipeline():
 
     print(f"config mode: {config.__dict__}")
 
-    analysis = await start_analysis()
-
-    return analysis
+    await start_analysis()

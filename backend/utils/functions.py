@@ -9,3 +9,12 @@ def convert_numpy_types(obj):
         return obj.item()
     else:
         return obj
+
+
+def extract_config_data(obj):
+    if hasattr(obj, '__dict__'):
+        return {k: extract_config_data(v) for k, v in obj.__dict__.items()}
+    elif isinstance(obj, list):
+        return [extract_config_data(i) for i in obj]
+    else:
+        return obj

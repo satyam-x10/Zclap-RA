@@ -22,12 +22,12 @@ Primary_agents = {
 }
 
 
-def run_primary_agents():
+async def run_primary_agents():
     # Run all agents in the primary category
     for agent_name, agent_function in Primary_agents.items():
         print(f"Running {agent_name}...")
         try:
-            agent_function()
+            await agent_function()
         except Exception as e:
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails

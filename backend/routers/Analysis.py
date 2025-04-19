@@ -4,6 +4,8 @@ from utils.video_utils import save_upload_file
 from evaluations.pipeline import run_analysis_pipeline
 from utils.functions import convert_numpy_types
 from data.Config import config
+from utils.functions import extract_config_data
+
 router = APIRouter()
 
 import numpy as np
@@ -23,16 +25,23 @@ async def receive_data(
     config.video_file_path = video_file_path
     
     # You can save the file or process it
-    analysis = await run_analysis_pipeline()    
+    await run_analysis_pipeline()    
 
     # return analysis
+    analysis_data = extract_config_data(config.analysis)
+    analysis_data.pop("video_ingestion_agent", None)  # safely remove if exists
 
     final_output = {
         "received": True,
         "jsonData": parsed_config_json,
         "savedTo": video_file_path,
-        "analysis": analysis
+        "config": extract_config_data(config),
+        "analysis": analysis_data,
     }
     print("Final Output:", final_output)
+
+    # save in a json file
+    with open("output.json", "w") as outfile:
+        json.dump(convert_numpy_types(final_output), outfile, indent=4)
 
     return convert_numpy_types(final_output)

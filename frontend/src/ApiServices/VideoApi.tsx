@@ -17,6 +17,8 @@ export const fetchVideoData = async (videoAndConfigData) => {
       },
     });
 
+    console.log("Response data:", res.data);    
+
     return res.data;
   } catch (err) {
     console.error("Error fetching video data:", err);

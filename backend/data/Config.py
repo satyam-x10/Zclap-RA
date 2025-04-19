@@ -35,7 +35,7 @@ class Config:
 
     parsed_config_json = None
 
-    analysis = None
+    analysis = Analysis()
 
 
-config = Analysis()
+config = Config()

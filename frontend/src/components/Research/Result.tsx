@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { response } from "../../utils/rough";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -10,20 +9,20 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-
+import { useAppContext } from "../../context/AppContext";
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 );
 
 const Result = () => {
   const [tab, setTab] = useState("config");
-
-  const { jsonData, fileData, analysis } = response;
+  const { responseData } = useAppContext();
+  const { jsonData, fileData, analysis } = responseData;
   const criteria = jsonData.criteria;
 
   // Create dynamic score data from analysis object
@@ -33,7 +32,7 @@ const Result = () => {
 
     // Find the score in the value object
     const scoreKey = Object.keys(value).find(
-      (k) => k.includes("score") || k.includes("coherence"),
+      (k) => k.includes("score") || k.includes("coherence")
     );
     if (scoreKey) {
       // Format the key for display (remove _analysis suffix, replace underscores with spaces, capitalize)
@@ -296,13 +295,8 @@ const Result = () => {
       <div className="tab-content">{renderTab()}</div>
       <style jsx>{`
         .result-container {
-          font-family:
-            "Inter",
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            sans-serif;
+          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, sans-serif;
           max-width: 900px;
           margin: 0 auto;
           background-color: #ffffff;

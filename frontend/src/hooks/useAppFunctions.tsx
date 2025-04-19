@@ -31,7 +31,6 @@ export const useAppFunctions = () => {
 
     await fetchVideoData({ jsonData, fileData })
       .then((data) => {
-        console.log("Fetched video data:", data);
         setResponseData(data);
         setHaveResults(true);
       })

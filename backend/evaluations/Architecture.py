@@ -11,6 +11,3 @@ async def  start_analysis ():
     await run_meta_agents()
 
     await run_Conversational_agents()
-
-
-    return {}
