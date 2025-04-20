@@ -1,8 +1,8 @@
 import os
 import sys
 
-# # Add the root project directory to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+# # # Add the root project directory to sys.path
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 
 from data.valuables import valuablesConfig
@@ -33,6 +33,6 @@ async def run_Conversational_agents():
     return conversation_history
 
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(run_Conversational_agents())
+# if __name__ == "__main__":
+#     import asyncio
+#     asyncio.run(run_Conversational_agents())

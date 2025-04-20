@@ -1,7 +1,7 @@
 import sys
 import os
 import asyncio
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from data.Config import config
 
