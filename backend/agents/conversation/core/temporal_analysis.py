@@ -1,5 +1,5 @@
 from utils.constant import Main_OBJECTIVES
-from backend.agents.llms.services.groq_client import chat_with_groq
+from agents.llms.services.groq_client import chat_with_groq
 from data.Config import config
 from agents.llms.prompt import getPromptTemplate
 from agents.extractors.temporal_analysis import agent_manifest

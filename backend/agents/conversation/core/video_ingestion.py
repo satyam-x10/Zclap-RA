@@ -1,5 +1,5 @@
 from utils.constant import Main_OBJECTIVES
-from backend.agents.llms.services.groq_client import chat_with_groq
+from agents.llms.services.groq_client import chat_with_groq
 from data.Config import config
 from agents.llms.prompt import getPromptTemplate
 from agents.extractors.video_ingestion import agent_manifest
@@ -9,4 +9,7 @@ async def run(conversation_history):
     resposne = await chat_with_groq(prompt, model="gemma2-9b-it")
     resposne_message = resposne
     conversation_history.push({"agent": agent_manifest["agent_name"], "content": resposne_message})
+
+    print(f"Final Agent: {agent_manifest['agent_name']}, Response: {resposne_message}")
+
     return  conversation_history
