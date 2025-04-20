@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from data.Config import config
 
+
 # Primary extractors
 from agents.extractors.video_ingestion import run as ingest_video
 from agents.extractors.temporal_analysis import run as eval_temporal
@@ -13,13 +14,7 @@ from agents.extractors.dynamics_robustness import run as eval_dynamics
 from agents.extractors.generalization import run as eval_generalization
 from agents.extractors.perception import run as extract_perception
 
-# Primary conversation agents
-from agents.conversation.core.video_ingestion import run as ingest_video_conversation
-from agents.conversation.core.temporal_analysis import run as eval_temporal_conversation
-from agents.conversation.core.semantic_analysis import run as eval_semantic_conversation
-from agents.conversation.core.dynamics_robustness import run as eval_dynamics_conversation
-from agents.conversation.core.generalization import run as eval_generalization_conversation
-from agents.conversation.core.perception import run as extract_perception_conversation
+from agents.conversation.handle_pipeline_mode import handle_pipeline_mode
 
 # Mapping of extractor agents
 Primary_agents_extractor = {
@@ -31,15 +26,6 @@ Primary_agents_extractor = {
     "generalization_agent": eval_generalization
 }
 
-# Mapping of conversation agents
-Primary_agent_conversations = {
-    "video_ingestion_agent": ingest_video_conversation,
-    "perception_agent": extract_perception_conversation,
-    "semantic_analysis_agent": eval_semantic_conversation,
-    "temporal_analysis_agent": eval_temporal_conversation,
-    "dynamics_robustness_agent": eval_dynamics_conversation,
-    "generalization_agent": eval_generalization_conversation
-}
 
 
 async def run_primary_agents():
@@ -53,11 +39,13 @@ async def run_primary_agents():
         # Optionally: await asyncio.sleep(2)
 
 
-async def run_agents_conversations():
+async def run_agents_conversations(conversation_history,pipeline_mode):
     print("\nRunning primary agent conversations...\n")
-    for agent_name, conversation_function in Primary_agent_conversations.items():
-        print(f"💬 Running {agent_name} conversation...")
-        try:
-            await conversation_function()
-        except Exception as e:
-            print(f"❌ Error in {agent_name} conversation: {e}")
+
+    # export const PIPELINE_MODES = ["default", "parallel", "sequential", ];
+    try:
+        conversation_history= handle_pipeline_mode(pipeline_mode,conversation_history)
+        print("Primary agents conversation history: ", conversation_history)
+
+    except Exception as e:
+        print(f"❌ Error in conversation: {e}")

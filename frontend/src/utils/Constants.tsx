@@ -1,5 +1,5 @@
-export const PIPELINE_MODES = ["default", "parallel", "sequential", "custom"];
-export const REPORT_FORMATS = ["summary", "detailed", "diagnostic", "pdf"];
+export const PIPELINE_MODES = ["hybrid", "parallel", "sequential"];
+export const REPORT_FORMATS = ["summary", "detailed", "diagnostic"];
 
 export const DefaultEvaluationCriteria = (fileData) => {
   return {

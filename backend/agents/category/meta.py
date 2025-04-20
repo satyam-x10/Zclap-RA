@@ -37,7 +37,7 @@ async def run_meta_agents():
 
 
 
-async def run_agents_conversations():
+async def run_agents_conversations(conversation_history,report_format):
     print("\nRunning meta agent conversations...\n")
     for agent_name, conversation_function in Meta_agents.items():
         print(f"💬 Running {agent_name} conversation...")

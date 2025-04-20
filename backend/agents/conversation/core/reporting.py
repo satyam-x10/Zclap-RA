@@ -1,2 +1,4 @@
-async def run():
+async def run(conversation_history):
+    conversation_history+="reporting agent is running...\n"
+    return conversation_history
     print("reporting")

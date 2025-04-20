@@ -48,7 +48,7 @@ async def run_secondary_agents():
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails
 
-async def run_agents_conversations():
+async def run_agents_conversations(conversation_history):
     print("\nRunning secondary agent conversations...\n")
     for agent_name, conversation_function in Primary_agent_conversations.items():
         print(f"💬 Running {agent_name} conversation...")

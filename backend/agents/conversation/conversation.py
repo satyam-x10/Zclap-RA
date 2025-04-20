@@ -14,10 +14,11 @@ async def run_Conversational_agents():
     primary_agents = config.primary_agents
     secondary_agents = config.secondary_agents
     meta_agents = config.meta_agents
-    conversation_history= valuablesConfig.conversation_history
 
-    await run_primary_agent_conversations()
-    await run_secondary_agent_conversations()
-    await run_meta_agent_conversations()
+    conversation_history= None
 
-    pass
+    conversation_history= await run_primary_agent_conversations(conversation_history,pipeline_mode)
+    conversation_history= await run_secondary_agent_conversations(conversation_history)
+    conversation_history= await run_meta_agent_conversations(conversation_history,report_format)
+
+    return conversation_history

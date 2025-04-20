@@ -15,3 +15,4 @@ timm
 sentence-transformers
 scikit-learn
 pydantic
+groq
