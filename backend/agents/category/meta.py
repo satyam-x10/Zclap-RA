@@ -4,8 +4,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from data.Config import config
 
 
-from agents.extractors.reasoning_agent import run as reasoning_agent
-from agents.extractors.reporting_agent import run as reporting_agent
+from agents.extractors.reasoning import run as reasoning_agent
+from agents.extractors.reporting import run as reporting_agent
 
 # Actual agent function mapping
 Meta_agents = {
@@ -15,7 +15,10 @@ Meta_agents = {
 
 async def run_meta_agents():
     # Run all agents in the primary category
+    user_selected_agents = config.meta_agents
     for agent_name, agent_function in Meta_agents.items():
+        if agent_name not in user_selected_agents:
+            continue
         print(f"Running {agent_name}...")
         try:
            await agent_function()

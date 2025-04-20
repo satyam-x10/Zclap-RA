@@ -41,7 +41,3 @@ async def run() -> None:
     }
 
     print("Motion Agent Analysis:", config.analysis.motion_agent)
-
-    # save the analysis to a file
-    with open(config.analysis.motion_agent_file, 'w') as f:
-        f.write(str(config.analysis.motion_agent))

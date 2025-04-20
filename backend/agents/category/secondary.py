@@ -3,11 +3,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from data.Config import config
 
-from agents.extractors.aesthetic_agent import run as aesthetic_agent
-from agents.extractors.motion_agent import run as motion_agent
-from agents.extractors.caption_alignment_agent import run as caption_alignment_agent
-from agents.extractors.redundancy_agent import run as redundancy_agent
-from agents.extractors.transition_agent import run as transition_agent
+from agents.extractors.aesthetic import run as aesthetic_agent
+from agents.extractors.motion import run as motion_agent
+from agents.extractors.caption_alignment import run as caption_alignment_agent
+from agents.extractors.redundancy import run as redundancy_agent
+from agents.extractors.transition import run as transition_agent
 
 # Actual agent function mapping
 Secondary_agents = {
@@ -21,7 +21,12 @@ Secondary_agents = {
 
 async def run_secondary_agents():
     # Run all agents in the primary category
+    user_selected_agents = config.secondary_agents
+    print(f"Running secondary agents: {user_selected_agents}")
+
     for agent_name, agent_function in Secondary_agents.items():
+        if agent_name not in user_selected_agents:
+            continue  # Skip agents not selected by the user
         print(f"Running {agent_name}...")
         try:
            await agent_function()

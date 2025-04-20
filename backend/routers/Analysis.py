@@ -8,7 +8,7 @@ from utils.functions import extract_config_data
 from utils.functions import drop_frames_data
 router = APIRouter()
 from utils.functions import class_to_dict
-
+from  agents.conversation.conversation import run_Conversational_agents
 import numpy as np
 
 
@@ -38,6 +38,8 @@ async def receive_data(
     }
     final_output = class_to_dict(valuables)
     print(final_output)
+
+    await run_Conversational_agents()
 
     # save the config to a file
     with open("config.json", "w") as config_file:

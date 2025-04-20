@@ -1,5 +1,6 @@
 import numpy as np
 from data.Config import config
+from data.valuables import valuablesConfig
 
 async def convert_numpy_types(obj):
     if isinstance(obj, dict):
@@ -56,5 +57,10 @@ async def drop_frames_data():
     valualables.analysis.video_ingestion_agent["frames"] = None
     valualables.analysis.perception_agent["visual_embeddings"] = None
     valualables.analysis.perception_agent["motion_vectors"] = None
-    
+    valualables.analysis.perception_agent["semantic_tags"] = None
+    valualables.analysis.semantic_analysis_agent["semantic_segments"] = None
+    valualables.analysis.semantic_analysis_agent["entity_map"] = None
+
+    valuablesConfig.analysis= valualables
+      
     return valualables
