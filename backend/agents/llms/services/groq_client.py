@@ -15,8 +15,8 @@ def chat_with_groq(user_input: str,model) -> str:
     
     api_key = "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"
     client = Groq(api_key=api_key)
-    completion = client.chat.completions.create(
 # gemma2-9b-it , llama-3.3-70b-versatile ,whisper-large-v3 ,distil-whisper-large-v3-en
+    completion =  client.chat.completions.create(
         model=model,
         messages=[
             {"role": "user", "content": user_input}
@@ -32,10 +32,6 @@ def chat_with_groq(user_input: str,model) -> str:
     for chunk in completion:
         response += chunk.choices[0].delta.content or ""
 
-    return response
+    print(f"Response from Groq: {response}")
 
-if __name__ == "__main__":
-    user_input = "Hello, how are you?"
-    model = "gemma2-9b-it"
-    response = chat_with_groq(user_input, model)
-    print(response)
+    return response

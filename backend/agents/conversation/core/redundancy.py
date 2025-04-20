@@ -6,7 +6,10 @@ from agents.extractors.redundancy import agent_manifest
 
 async def run(conversation_history):
     prompt = getPromptTemplate(agent_manifest["agent_name"],agent_manifest["purpose"],conversation_history)
-    resposne = await chat_with_groq(prompt, model="gemma2-9b-it")
+    resposne = chat_with_groq(prompt, model="gemma2-9b-it")
     resposne_message = resposne
-    conversation_history.push({"agent": agent_manifest["agent_name"], "content": resposne_message})
+    conversation_history["messages"].append({
+    "agent": agent_manifest["agent_name"],
+    "content": resposne_message
+})
     return  conversation_history

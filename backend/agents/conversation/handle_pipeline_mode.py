@@ -90,6 +90,7 @@ async def handle_primary_pipeline_mode(pipeline_mode: str, conversation_history:
         sequence = list(Primary_agent_conversations.keys())
         for agent_name in sequence:
             try:
+                print(f"Running {agent_name}...")
                 conversation_history = await Primary_agent_conversations[agent_name](conversation_history)
             except Exception as e:
                 print(f"Error in {agent_name}: {e}")

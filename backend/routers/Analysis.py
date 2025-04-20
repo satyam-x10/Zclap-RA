@@ -37,8 +37,7 @@ async def receive_data(
         "config": valuables,
     }
     final_output = class_to_dict(valuables)
-    print(final_output)
-
+    print(f"starting converaations")
     await run_Conversational_agents()
 
     # save the config to a file
