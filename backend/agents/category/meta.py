@@ -35,13 +35,11 @@ async def run_meta_agents():
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails
 
-
-
 async def run_agents_conversations(conversation_history,report_format):
-    print("\nRunning meta agent conversations...\n")
-    for agent_name, conversation_function in Meta_agents.items():
-        print(f"💬 Running {agent_name} conversation...")
+    for agent_name, conversation_function in Meta_agents_conversation.items():
         try:
-            await conversation_function()
+            conversation_history=  await conversation_function(conversation_history,report_format)
+
         except Exception as e:
-            print(f"❌ Error in {agent_name} conversation: {e}")
+            print(f" Error in {agent_name} conversation: {e}")
+    return conversation_history

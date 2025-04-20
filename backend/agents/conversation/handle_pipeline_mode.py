@@ -15,6 +15,15 @@ from agents.conversation.core.dynamics_robustness import run as eval_dynamics_co
 from agents.conversation.core.generalization import run as eval_generalization_conversation
 from agents.conversation.core.perception import run as extract_perception_conversation
 
+from agents.conversation.core.redundancy import run as  eval_redundancy_conversation
+from agents.conversation.core.aesthetic import run as  aesthetic_conversation
+from agents.conversation.core.motion import run as  motion_conversation
+from agents.conversation.core.transition import run as  transition_conversation
+from agents.conversation.core.caption_alignment import run as  caption_alignment
+
+
+from agents.conversation.core.reasoning import run as eval_reasoning_conversation
+from agents.conversation.core.reporting import run as eval_reporting_conversation
 
 Primary_agent_conversations = {
     "video_ingestion_agent": ingest_video_conversation,
@@ -25,8 +34,20 @@ Primary_agent_conversations = {
     "generalization_agent": eval_generalization_conversation
 }
 
+Secondary_agent_conversations = {
+    "aesthetic_agent": aesthetic_conversation,
+    "motion_agent": motion_conversation,
+    "redundancy_agent": eval_redundancy_conversation,
+    "transition_agent": transition_conversation,
+    "caption_alignment_agent": caption_alignment,
+}
 
-async def handle_pipeline_mode(pipeline_mode: str, conversation_history: str) -> str:
+Meta_agent_conversations = {
+    "reasoning_agent": eval_reasoning_conversation,
+    "reporting_agent": eval_reporting_conversation,
+}
+
+async def handle_primary_pipeline_mode(pipeline_mode: str, conversation_history: str) -> str:
     
 
     if pipeline_mode == "hybrid":
@@ -78,6 +99,8 @@ async def handle_pipeline_mode(pipeline_mode: str, conversation_history: str) ->
 
     return conversation_history
 
+
+# async def handle_secondary_pipeline_mode(conversation_history: str) -> str:
 
 # if __name__ == "__main__":
 #     # Example usage

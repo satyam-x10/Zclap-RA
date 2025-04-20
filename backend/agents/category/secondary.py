@@ -24,7 +24,7 @@ Secondary_agents = {
     "aesthetic_agent": aesthetic_agent,                  # Can run last; general visual eval
 }
 
-Primary_agent_conversations = {
+Secondary_agent_conversations = {
     "motion_agent": motion_agent_conversation,                        # Needs motion_vectors
     "transition_agent": transition_agent_conversation,
     "caption_alignment_agent": caption_alignment_agen_conversationt,  # Needs captions vs. frames/prompt
@@ -49,10 +49,9 @@ async def run_secondary_agents():
             continue  # Skip to the next agent if one fails
 
 async def run_agents_conversations(conversation_history):
-    print("\nRunning secondary agent conversations...\n")
-    for agent_name, conversation_function in Primary_agent_conversations.items():
-        print(f"💬 Running {agent_name} conversation...")
+    for agent_name, conversation_function in Secondary_agent_conversations.items():
         try:
-            await conversation_function()
+            conversation_history=  await conversation_function(conversation_history)
         except Exception as e:
-            print(f"❌ Error in {agent_name} conversation: {e}")
+            print(f" Error in {agent_name} conversation: {e}")
+    return conversation_history

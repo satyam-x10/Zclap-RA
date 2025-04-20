@@ -1,3 +1,10 @@
+import os
+import sys
+
+# # Add the root project directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+
 from data.valuables import valuablesConfig
 from data.Config import config
 from utils.functions import class_to_dict
@@ -8,17 +15,24 @@ from agents.category.meta import run_agents_conversations as run_meta_agent_conv
 
 async def run_Conversational_agents():
 
-    analysis_from_extractors= class_to_dict(valuablesConfig.analysis)
-    pipeline_mode =config.pipeline_mode
-    report_format = config.report_format
-    primary_agents = config.primary_agents
-    secondary_agents = config.secondary_agents
-    meta_agents = config.meta_agents
+    # analysis_from_extractors= class_to_dict(valuablesConfig.analysis)
+    # pipeline_mode =config.pipeline_mode
+    # report_format = config.report_format
+    # primary_agents = config.primary_agents
+    # secondary_agents = config.secondary_agents
+    # meta_agents = config.meta_agents
 
-    conversation_history= None
+    report_format= "detailed"
+    conversation_history= ""
+    pipeline_mode= "sequential"
 
     conversation_history= await run_primary_agent_conversations(conversation_history,pipeline_mode)
     conversation_history= await run_secondary_agent_conversations(conversation_history)
     conversation_history= await run_meta_agent_conversations(conversation_history,report_format)
 
     return conversation_history
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(run_Conversational_agents())
