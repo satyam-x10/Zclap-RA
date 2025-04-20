@@ -58,7 +58,7 @@ async def run() -> None:
         cosine_similarity([tag_embeddings[i]], [tag_embeddings[i + 1]])[0][0]
         for i in range(len(tag_embeddings) - 1)
     ]
-    semantic_consistency_score = round(np.mean(similarities), 4) if similarities else 1.0
+    semantic_consistency_score = round(float(np.mean(similarities)), 4) if similarities else 1.0
 
     # -- Save result to config
     config.analysis.semantic_analysis_agent = {

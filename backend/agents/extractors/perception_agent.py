@@ -87,6 +87,8 @@ async def run() -> None:
         unique_tags.update(word.lower() for word in tags[0].split() if word.lower() not in STOPWORDS)
 
     # -- Save to config
+    unique_tags = list(unique_tags)
+
     config.analysis.perception_agent = {
         "visual_embeddings": visual_embeddings,
         "semantic_tags": semantic_tags,
@@ -96,5 +98,5 @@ async def run() -> None:
         "brightness_series": brightness_series,
     }
 
-    print(f"[perception_agent] Processed {config.analysis.perception_agent} ")
+    # print(f"[perception_agent] Processed {config.analysis.perception_agent} ")
     

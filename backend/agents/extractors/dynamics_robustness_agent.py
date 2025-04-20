@@ -53,7 +53,4 @@ async def run() -> None:
         "summary": summary
     }
 
-    print(f"Dynamics Robustness: {config.analysis.dynamics_robustness_agent}")
-        # save to a file
-    with open("dynamics_robustness_analysis.txt", "w") as f:
-        f.write(str(config.analysis.dynamics_robustness_agent))
+    # print(f"Dynamics Robustness: {config.analysis.dynamics_robustness_agent}")

@@ -7,6 +7,7 @@ from data.Config import config
 from utils.functions import extract_config_data
 from utils.functions import drop_frames_data
 router = APIRouter()
+from utils.functions import class_to_dict
 
 import numpy as np
 
@@ -35,10 +36,11 @@ async def receive_data(
         "savedTo": video_file_path,
         "config": valuables,
     }
-    print("Final Output:", valuables)
+    final_output = class_to_dict(valuables)
+    print(final_output)
 
     # save the config to a file
     with open("config.json", "w") as config_file:
         json.dump(final_output, config_file, indent=4)
 
-    return convert_numpy_types(final_output)
+    return  final_output

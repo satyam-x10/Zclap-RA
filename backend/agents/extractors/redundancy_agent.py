@@ -47,7 +47,7 @@ async def run() -> None:
 
     config.analysis.redundancy_agent = {
         "semantic_redundancy": semantic_redundancy,
-        "visual_variability": visual_variability,
+        "visual_variability": float(visual_variability),
         "summary": summary
     }
 

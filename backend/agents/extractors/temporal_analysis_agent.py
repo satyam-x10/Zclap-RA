@@ -73,11 +73,11 @@ async def run() -> None:
         cosine_similarity([emb_array[i]], [emb_array[i + 1]])[0][0]
         for i in range(len(emb_array) - 1)
     ]
-    coherence_score = round(np.mean(similarities), 4)
+    coherence_score = round(float(np.mean(similarities)), 4)
 
     # Step 4: Motion stats
-    motion_mean = round(np.mean(motion_vectors), 4)
-    motion_std = round(np.std(motion_vectors), 4)
+    motion_mean = round(float(np.mean(motion_vectors)), 4)
+    motion_std = round(float(np.std(motion_vectors)), 4)
     spike_frames = [
         i for i, val in enumerate(motion_vectors)
         if val > (motion_mean + 2 * motion_std)

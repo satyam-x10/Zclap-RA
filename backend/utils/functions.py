@@ -1,7 +1,7 @@
 import numpy as np
 from data.Config import config
 
-def convert_numpy_types(obj):
+async def convert_numpy_types(obj):
     if isinstance(obj, dict):
         return {k: convert_numpy_types(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -12,7 +12,7 @@ def convert_numpy_types(obj):
         return obj
 
 
-def extract_config_data(obj):
+async def extract_config_data(obj):
     if hasattr(obj, '__dict__'):
         return {k: extract_config_data(v) for k, v in obj.__dict__.items()}
     elif isinstance(obj, list):
@@ -20,46 +20,41 @@ def extract_config_data(obj):
     else:
         return obj
 
-def class_to_dict(obj):
+def class_to_dict(obj, exclude: list = None):
     """
-    Recursively converts a class instance to a dictionary, skipping any attributes in `exclude`
-    and filtering out None, empty dicts/lists/strings.
+    Recursively converts any class instance into a dictionary.
+    Skips attributes in `exclude` and filters out None/empty values.
     """
-    exclude = None
-
     if exclude is None:
         exclude = []
 
     result = {}
-    for key in dir(obj):
-        if key.startswith("__") or key in exclude:
+
+    for attr in dir(obj):
+        if attr.startswith("__") or attr in exclude:
             continue
 
-        value = getattr(obj, key)
+        value = getattr(obj, attr)
 
-        # Skip methods and private attributes
+        # Skip methods
         if callable(value):
             continue
 
         # Recursively handle nested class instances
         if hasattr(value, "__dict__"):
-            value = class_to_dict(value)
+            value = class_to_dict(value, exclude)
 
         # Filter out empty or None values
         if value not in (None, {}, [], ""):
-            result[key] = value
+            result[attr] = value
 
     return result
 
-
 async def drop_frames_data():
-    valualables =config
+    valualables =config  
     
-    valualables.analysis.video_ingestion_agent = None
-    valualables.analysis.perception_agent = None
-
-    # save valuables to file
-    with open("valuable.json", 'w') as f:
-        f.write(str(valualables))
+    valualables.analysis.video_ingestion_agent["frames"] = None
+    valualables.analysis.perception_agent["visual_embeddings"] = None
+    valualables.analysis.perception_agent["motion_vectors"] = None
     
     return valualables

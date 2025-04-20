@@ -55,8 +55,4 @@ async def run() -> None:
         "aesthetic_score": aesthetic_score,
         "summary": summary
     }
-    # print (f"Aesthetic Agent: {config.analysis.aesthetic_agent}")
-
-    # save to a file
-    with open("aesthetic_agent.json", "w") as f:
-        f.write(str(config.analysis.aesthetic_agent))
+    # print (f"Aesthetic Agent: {config.analysis.aesthetic_agent}"

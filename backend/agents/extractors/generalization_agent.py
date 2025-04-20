@@ -70,19 +70,15 @@ async def run() -> None:
 
     # -- Save to config
     config.analysis.generalization_agent = {
-        "generalisation_score": generalisation_score,
-        "diversity_index": diversity_index,
-        "repetition_ratio": repetition_ratio,
-        "visual_variability": visual_variability,
-        "semantic_score": round(semantic_score, 4),
-        "matched_tags": tag_matches,
-        "overfitting_warning": overfitting_warning,
-        "most_common_sentence": most_common_sentence,
-        "summary": analysis
+    "generalisation_score": float(generalisation_score),
+    "diversity_index": float(diversity_index),
+    "repetition_ratio": float(repetition_ratio),
+    "visual_variability": float(visual_variability),
+    "semantic_score": float(round(semantic_score, 4)),
+    "matched_tags": tag_matches,
+    "overfitting_warning": bool(overfitting_warning),
+    "most_common_sentence": most_common_sentence,
+    "summary": analysis
     }
-
-    print("Generalization Agent Analysis:" ,config.analysis.generalization_agent)
+    # print("Generalization Agent Analysis:" ,config.analysis.generalization_agent)
     
-    # -- Save to file
-    with open(config.analysis.generalization_agent_path, "w") as f:
-        f.write(str(config.analysis.generalization_agent))

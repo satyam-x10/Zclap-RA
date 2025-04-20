@@ -63,4 +63,4 @@ async def run() -> Dict[str, Any]:
             "total_frames_extracted": len(extracted_frames)
         }
     }
-    print(f"Video ingestion completed. {config.analysis.video_ingestion_agent}")
+    # print(f"Video ingestion completed. {config.analysis.video_ingestion_agent}")
