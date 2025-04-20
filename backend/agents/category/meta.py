@@ -7,10 +7,19 @@ from data.Config import config
 from agents.extractors.reasoning import run as reasoning_agent
 from agents.extractors.reporting import run as reporting_agent
 
+from agents.conversation.core.reasoning import run as reasoning_agent_conversation
+from agents.conversation.core.reporting import run as reporting_agentconversation
+
+
 # Actual agent function mapping
 Meta_agents = {
 "reasoning_agent": reasoning_agent,
 "reporting_agent": reporting_agent,
+}
+
+Meta_agents_conversation = {
+"reasoning_agent": reasoning_agent_conversation,
+"reporting_agent": reporting_agentconversation,
 }
 
 async def run_meta_agents():
@@ -25,3 +34,14 @@ async def run_meta_agents():
         except Exception as e:
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails
+
+
+
+async def run_agents_conversations():
+    print("\nRunning meta agent conversations...\n")
+    for agent_name, conversation_function in Meta_agents.items():
+        print(f"💬 Running {agent_name} conversation...")
+        try:
+            await conversation_function()
+        except Exception as e:
+            print(f"❌ Error in {agent_name} conversation: {e}")

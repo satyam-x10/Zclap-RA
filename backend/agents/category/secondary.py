@@ -9,6 +9,12 @@ from agents.extractors.caption_alignment import run as caption_alignment_agent
 from agents.extractors.redundancy import run as redundancy_agent
 from agents.extractors.transition import run as transition_agent
 
+from agents.conversation.core.aesthetic import run as aesthetic_agent_conversation
+from agents.conversation.core.motion import run as motion_agent_conversation
+from agents.conversation.core.caption_alignment import run as caption_alignment_agen_conversationt
+from agents.conversation.core.redundancy import run as redundancy_agent_conversation
+from agents.conversation.core.transition import run as transition_agent_conversation
+
 # Actual agent function mapping
 Secondary_agents = {
     "motion_agent": motion_agent,                        # Needs motion_vectors
@@ -16,6 +22,14 @@ Secondary_agents = {
     "caption_alignment_agent": caption_alignment_agent,  # Needs captions vs. frames/prompt
     "redundancy_agent": redundancy_agent,                # Needs tags/embeddings to detect repeats
     "aesthetic_agent": aesthetic_agent,                  # Can run last; general visual eval
+}
+
+Primary_agent_conversations = {
+    "motion_agent": motion_agent_conversation,                        # Needs motion_vectors
+    "transition_agent": transition_agent_conversation,
+    "caption_alignment_agent": caption_alignment_agen_conversationt,  # Needs captions vs. frames/prompt
+    "redundancy_agent": redundancy_agent_conversation,                # Needs tags/embeddings to detect repeats
+    "aesthetic_agent": aesthetic_agent_conversation,                  # Can run last; general visual eval
 }
 
 
@@ -33,3 +47,12 @@ async def run_secondary_agents():
         except Exception as e:
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails
+
+async def run_agents_conversations():
+    print("\nRunning secondary agent conversations...\n")
+    for agent_name, conversation_function in Primary_agent_conversations.items():
+        print(f"💬 Running {agent_name} conversation...")
+        try:
+            await conversation_function()
+        except Exception as e:
+            print(f"❌ Error in {agent_name} conversation: {e}")
