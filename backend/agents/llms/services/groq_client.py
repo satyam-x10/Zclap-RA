@@ -2,6 +2,9 @@
 # llama-3.3-70b-versatile
 # deepseek-r1-distill-llama-70b
 # qwen-qwq-32b
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 
 import os
@@ -31,3 +34,8 @@ def chat_with_groq(user_input: str,model) -> str:
 
     return response
 
+if __name__ == "__main__":
+    user_input = "Hello, how are you?"
+    model = "gemma2-9b-it"
+    response = chat_with_groq(user_input, model)
+    print(response)

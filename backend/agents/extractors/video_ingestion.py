@@ -6,7 +6,7 @@ from data.Config import config
 
 agent_manifest = {
     "agent_name": "video_ingestion_agent",
-    "agent_description": "Agent for ingesting video files and extracting frames.",
+    "purpose": "Agent for ingesting video files and extracting frames.",
 }
 
 async def run() -> Dict[str, Any]:
