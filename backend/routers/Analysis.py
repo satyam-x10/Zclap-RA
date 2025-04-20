@@ -5,7 +5,7 @@ from evaluations.pipeline import run_analysis_pipeline
 from utils.functions import convert_numpy_types
 from data.Config import config
 from utils.functions import extract_config_data
-
+from utils.functions import drop_frames_data
 router = APIRouter()
 
 import numpy as np
@@ -27,21 +27,18 @@ async def receive_data(
     # You can save the file or process it
     await run_analysis_pipeline()    
 
-    # return analysis
-    analysis_data = extract_config_data(config.analysis)
-    analysis_data.pop("video_ingestion_agent", None)  # safely remove if exists
+    valuables= await drop_frames_data()
 
     final_output = {
         "received": True,
         "jsonData": parsed_config_json,
         "savedTo": video_file_path,
-        "config": extract_config_data(config),
-        "analysis": analysis_data,
+        "config": valuables,
     }
-    print("Final Output:", final_output)
+    print("Final Output:", valuables)
 
-    # save in a json file
-    with open("output.json", "w") as outfile:
-        json.dump(convert_numpy_types(final_output), outfile, indent=4)
+    # save the config to a file
+    with open("config.json", "w") as config_file:
+        json.dump(final_output, config_file, indent=4)
 
     return convert_numpy_types(final_output)

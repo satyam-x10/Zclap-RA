@@ -47,6 +47,7 @@ async def run() -> None:
             "reasoning_trace": reasoning_trace,
             "summary": reasoning_summary
         }
+        print(f"[reporting_agent] Scorecard: {config.analysis.reporting_agent}")
 
         print(f"[reporting_agent] Final Report: Avg Score = {avg_score:.2f} | Verdict: {verdict}")
     except Exception as e:

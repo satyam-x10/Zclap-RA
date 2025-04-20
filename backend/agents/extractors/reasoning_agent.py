@@ -41,7 +41,7 @@ async def run() -> None:
             "summary": summary
         }
 
-        print(f"[reasoning_agent] Summary generated.")
+        print(f"[reasoning_agent] ",config.analysis.reasoning_agent)
     except Exception as e:
         config.analysis.reasoning_agent = {
             "reasoning_trace": [],

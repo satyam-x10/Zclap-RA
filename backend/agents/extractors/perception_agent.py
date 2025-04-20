@@ -95,3 +95,6 @@ async def run() -> None:
         "scene_changes": scene_changes,
         "brightness_series": brightness_series,
     }
+
+    print(f"[perception_agent] Processed {config.analysis.perception_agent} ")
+    

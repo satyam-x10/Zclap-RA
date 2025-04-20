@@ -50,4 +50,7 @@ async def run() -> None:
         "summary": summary
     }
 
-    print(f"[caption_alignment_agent] {summary}")
+    print(f"[caption_alignment_agent] {config.analysis.caption_alignment_agent}")
+        # save to a file
+    with open("caption_alignment_analysis.txt", "w") as f:
+        f.write(str(config.analysis.caption_alignment_agent))

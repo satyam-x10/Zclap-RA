@@ -32,3 +32,5 @@ async def run() -> None:
         "transition_density": transition_density,
         "summary": summary
     }
+
+    print(f"Transition Agent Summary: {config.analysis.transition_agent}")

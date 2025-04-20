@@ -8,6 +8,7 @@ import torchvision.transforms as T
 import torchvision.models as models
 from typing import List
 from data.Config import config
+from torchvision.models import resnet18, ResNet18_Weights
 
 agent_manifest = {
     "agent_name": "temporal_analysis_agent",
@@ -15,7 +16,7 @@ agent_manifest = {
 }
 
 # Load embedding model
-resnet_model = models.resnet18(pretrained=True)
+resnet_model = resnet18(weights=ResNet18_Weights.DEFAULT)
 resnet_model.eval()
 
 transform = T.Compose([

@@ -52,3 +52,8 @@ async def run() -> None:
         "scene_transitions": scene_transitions,
         "summary": summary
     }
+
+    print(f"Dynamics Robustness: {config.analysis.dynamics_robustness_agent}")
+        # save to a file
+    with open("dynamics_robustness_analysis.txt", "w") as f:
+        f.write(str(config.analysis.dynamics_robustness_agent))

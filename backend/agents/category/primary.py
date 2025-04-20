@@ -1,5 +1,6 @@
 import sys
 import os
+import asyncio
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from data.Config import config
 
@@ -28,6 +29,8 @@ async def run_primary_agents():
         print(f"Running {agent_name}...")
         try:
             await agent_function()
+            # wait 2 seconds between each agent run
+            # await asyncio.sleep(3)
         except Exception as e:
             print(f"Error running {agent_name}: {e}")
             continue  # Skip to the next agent if one fails

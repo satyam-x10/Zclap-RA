@@ -80,3 +80,9 @@ async def run() -> None:
         "most_common_sentence": most_common_sentence,
         "summary": analysis
     }
+
+    print("Generalization Agent Analysis:" ,config.analysis.generalization_agent)
+    
+    # -- Save to file
+    with open(config.analysis.generalization_agent_path, "w") as f:
+        f.write(str(config.analysis.generalization_agent))

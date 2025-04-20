@@ -11,7 +11,7 @@ const HomePage = () => {
 
   return (
     <div>
-      {!haveResults && (
+      {1 && (
         <div>
           <div className="homepage-container">
             <div className="half-container">
@@ -24,7 +24,7 @@ const HomePage = () => {
           </button>
         </div>
       )}
-      {haveResults && <Result />}
+      {0 && <Result />}
     </div>
   );
 };

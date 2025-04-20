@@ -67,3 +67,5 @@ async def run() -> None:
         "entity_map": entity_map,
         "sample_tags": tag_sequence[:10]  # preview
     }
+
+    print("Semantic Analysis Agent Results:", config.analysis.semantic_analysis_agent)

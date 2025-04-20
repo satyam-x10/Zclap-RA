@@ -51,4 +51,4 @@ async def run() -> None:
         "summary": summary
     }
 
-    print(f"[redundancy_agent] {summary}")
+    print(f"[redundancy_agent] {config.analysis.redundancy_agent}")
