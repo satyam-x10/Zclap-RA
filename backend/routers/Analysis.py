@@ -10,7 +10,7 @@ router = APIRouter()
 from utils.functions import class_to_dict
 from  agents.conversation.conversation import run_Conversational_agents
 import numpy as np
-
+import os
 
 
 @router.post("/analyse")
@@ -43,6 +43,10 @@ async def receive_data(
 
     # add conversations to final output
     final_output["conversations"]= conversations
+
+    # delete video_file_path locally
+    if os.path.exists(video_file_path):
+        os.remove(video_file_path)
 
     # save the config to a file
     with open("config.json", "w") as config_file:
