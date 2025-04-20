@@ -6,7 +6,7 @@ from agents.extractors.aesthetic import agent_manifest
 
 async def run(conversation_history):
     prompt = getPromptTemplate(agent_manifest["agent_name"],agent_manifest["purpose"],conversation_history)
-    resposne = chat_with_groq(prompt, model="gemma2-9b-it")
+    resposne = await chat_with_groq(prompt, model="gemma2-9b-it")
     resposne_message = resposne
     conversation_history["messages"].append({
     "agent": agent_manifest["agent_name"],

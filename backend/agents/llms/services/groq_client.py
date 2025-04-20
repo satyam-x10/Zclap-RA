@@ -8,15 +8,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 
 
 import os
-from groq import Groq
+from groq import AsyncGroq
 
-
-def chat_with_groq(user_input: str,model) -> str:
-    
-    api_key = "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"
-    client = Groq(api_key=api_key)
 # gemma2-9b-it , llama-3.3-70b-versatile ,whisper-large-v3 ,distil-whisper-large-v3-en
-    completion =  client.chat.completions.create(
+
+async def chat_with_groq(user_input: str, model: str) -> str:
+    api_key = "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"
+    client = AsyncGroq(api_key=api_key)
+
+    completion = await client.chat.completions.create(
         model=model,
         messages=[
             {"role": "user", "content": user_input}
@@ -29,9 +29,8 @@ def chat_with_groq(user_input: str,model) -> str:
     )
 
     response = ""
-    for chunk in completion:
+    async for chunk in completion:
         response += chunk.choices[0].delta.content or ""
 
     print(f"Response from Groq: {response}")
-
     return response

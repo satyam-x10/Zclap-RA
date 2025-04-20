@@ -17,11 +17,11 @@ async def run_Conversational_agents():
 
     pipeline_mode =config.pipeline_mode
     report_format = config.report_format
-    conversation_history={}
+    conversation_history={"messages": []}
 
     conversation_history= await run_primary_agent_conversations(conversation_history,pipeline_mode)
     conversation_history= await run_secondary_agent_conversations(conversation_history)
-    conversation_history= await run_meta_agent_conversations(conversation_history,report_format)
+    conversation_history= await run_meta_agent_conversations(conversation_history)
 
     return conversation_history
 

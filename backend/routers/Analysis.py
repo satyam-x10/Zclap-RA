@@ -35,10 +35,14 @@ async def receive_data(
         "jsonData": parsed_config_json,
         "savedTo": video_file_path,
         "config": valuables,
+        "conversations": None
     }
     final_output = class_to_dict(valuables)
     print(f"starting converaations")
-    await run_Conversational_agents()
+    conversations = await run_Conversational_agents()
+
+    # add conversations to final output
+    final_output["conversations"]= conversations
 
     # save the config to a file
     with open("config.json", "w") as config_file:
