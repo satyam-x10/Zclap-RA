@@ -6,12 +6,12 @@ import { useAppContext } from "../../context/AppContext";
 import { useAppFunctions } from "../../hooks/useAppFunctions";
 
 const HomePage = () => {
-  const { haveResults, loading } = useAppContext();
+  const { haveResults, loading,responseData } = useAppContext();
   const { handleNextStep } = useAppFunctions();
 
   return (
-    <div>
-      {1 && (
+    <div style={{ width: "100%", height: "100%",display: "flex",overflow: "hidden", flexDirection: "column",backgroundColor: "#1e1e1e" }}>
+      {!haveResults && (
         <div>
           <div className="homepage-container">
             <div className="half-container">
@@ -24,7 +24,7 @@ const HomePage = () => {
           </button>
         </div>
       )}
-      {0 && <Result />}
+      {haveResults && <Result response={responseData} />}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// Dark-themed VideoAnalysisDashboard
 import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -7,499 +8,333 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
-} from "chart.js";
-import { useAppContext } from "../../context/AppContext";
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
   Legend
-);
+} from "chart.js";
+// import { response } from "../../utils/rough";
 
-const Result = () => {
-  const [tab, setTab] = useState("config");
-  const { responseData } = useAppContext();
-  const { jsonData, fileData, analysis } = responseData;
-  const criteria = jsonData.criteria;
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-  // Create dynamic score data from analysis object
-  const scoreData = Object.entries(analysis).reduce((acc, [key, value]) => {
-    // Skip the "reasoning" key as it doesn't contain a score
-    if (key === "reasoning") return acc;
+const Result = ({response}) => {
+  const [activeTab, setActiveTab] = useState("analysis");
+  const { analysis, conversations, prompt } = response;
 
-    // Find the score in the value object
-    const scoreKey = Object.keys(value).find(
-      (k) => k.includes("score") || k.includes("coherence")
-    );
-    if (scoreKey) {
-      // Format the key for display (remove _analysis suffix, replace underscores with spaces, capitalize)
-      const formattedKey = key
-        .replace("_analysis", "")
-        .replace(/_/g, " ")
-        .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+  const scoreLabels = Object.keys(analysis.reporting_agent.scorecard);
+  const scoreData = Object.values(analysis.reporting_agent.scorecard);
 
-      // Add the score data
-      acc.push({
-        key: formattedKey,
-        value: value[scoreKey],
-        originalKey: key,
-      });
-    }
-    return acc;
-  }, []);
-
-  // Generate a color palette based on the number of items
-  const generateColorPalette = (count) => {
-    const baseColors = [
-      "#4361ee",
-      "#3a86ff",
-      "#00b4d8",
-      "#0096c7",
-      "#4cc9f0",
-      "#5390d9",
-      "#6930c3",
-      "#7400b8",
-    ];
-    return Array(count)
-      .fill()
-      .map((_, i) => baseColors[i % baseColors.length]);
+  const chartData = {
+    labels: scoreLabels.map(label => label.charAt(0).toUpperCase() + label.slice(1)),
+    datasets: [
+      {
+        label: 'Scores',
+        data: scoreData,
+        backgroundColor: scoreData.map(score =>
+          score < 0.4 ? 'rgba(229, 62, 62, 0.6)' :
+          score < 0.7 ? 'rgba(236, 201, 75, 0.6)' :
+          'rgba(56, 161, 105, 0.6)'
+        ),
+        borderColor: scoreData.map(score =>
+          score < 0.4 ? '#e53e3e' :
+          score < 0.7 ? '#ecc94b' :
+          '#38a169'
+        ),
+        borderWidth: 1
+      }
+    ]
   };
-
-  const colors = generateColorPalette(scoreData.length);
 
   const chartOptions = {
     responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Performance Analysis",
-        font: {
-          size: 16,
-          weight: "bold",
-        },
-      },
-      tooltip: {
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        titleFont: {
-          size: 14,
-        },
-        bodyFont: {
-          size: 13,
-        },
-        padding: 10,
-        cornerRadius: 4,
-      },
-    },
     scales: {
       y: {
         beginAtZero: true,
         max: 1,
         ticks: {
-          stepSize: 0.1,
+          color: "#e2e8f0",
+          callback: (value) => value.toFixed(1)
         },
         grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-        },
+          color: "rgba(255, 255, 255, 0.1)"
+        }
       },
       x: {
-        grid: {
-          display: false,
+        ticks: {
+          color: "#e2e8f0"
         },
-      },
+        grid: {
+          color: "rgba(255, 255, 255, 0.1)"
+        }
+      }
     },
-  };
-
-  const scoreChart = {
-    labels: scoreData.map((item) => item.key),
-    datasets: [
-      {
-        label: "Evaluation Scores",
-        data: scoreData.map((item) => item.value),
-        backgroundColor: colors,
-        borderWidth: 1,
-        borderRadius: 4,
-      },
-    ],
-  };
-
-  const renderConfigTab = () => (
-    <div className="content-container">
-      <div className="section">
-        <h3 className="section-title">Generation Parameters</h3>
-        <div className="parameter-grid">
-          {Object.entries(jsonData)
-            .filter(([key]) => key !== "criteria") // Exclude criteria as it's shown separately
-            .map(([key, value]) => (
-              <div key={key} className="parameter-item">
-                <span className="parameter-label">
-                  {key
-                    .split("_")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")}
-                  :
-                </span>
-                <span className="parameter-value">
-                  {typeof value === "object" ? JSON.stringify(value) : value}
-                </span>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      <div className="section">
-        <h3 className="section-title">Agent Criteria</h3>
-        <div className="criteria-grid">
-          {Object.entries(criteria).map(([key, agents]) => (
-            <div key={key} className="criteria-item">
-              <h4 className="criteria-name">
-                {key
-                  .split("_")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ")}
-              </h4>
-              <ul className="agent-list">
-                {agents.map((agent, i) => (
-                  <li key={i}>{agent}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderFileTab = () => (
-    <div className="content-container">
-      <div className="file-details">
-        <h3 className="section-title">File Information</h3>
-        <div className="file-grid">
-          {Object.entries(fileData).map(([key, value]) => (
-            <div key={key} className="file-item">
-              <span className="file-label">
-                {key
-                  .split("_")
-                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                  .join(" ")}
-                :
-              </span>
-              <span className="file-value">
-                {typeof value === "object" ? JSON.stringify(value) : value}
-              </span>
-            </div>
-          ))}
-          {response.savedTo && (
-            <div className="file-item">
-              <span className="file-label">Saved Path:</span>
-              <span className="file-value">{response.savedTo}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAnalysisTab = () => (
-    <div className="content-container">
-      <div className="chart-container">
-        <Bar data={scoreChart} options={chartOptions} />
-      </div>
-
-      <div className="analysis-details">
-        <h3 className="section-title">Analysis Details</h3>
-        <div className="analysis-grid">
-          {scoreData.map((item) => (
-            <div key={item.originalKey} className="analysis-item">
-              <h4 className="analysis-name">{item.key}</h4>
-              <div className="analysis-score">
-                <div
-                  className="score-bar"
-                  style={{
-                    width: `${item.value * 100}%`,
-                    backgroundColor: colors[scoreData.indexOf(item)],
-                  }}
-                ></div>
-                <span className="score-value">{item.value.toFixed(2)}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="verdict-section">
-        <h3 className="section-title">Reasoning Verdict</h3>
-        <div className="verdict-content">
-          <p className="verdict-text">
-            <span className="verdict-highlight">
-              {analysis.reasoning.verdict}
-            </span>{" "}
-            – {analysis.reasoning.explanation}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderTab = () => {
-    switch (tab) {
-      case "config":
-        return renderConfigTab();
-      case "file":
-        return renderFileTab();
-      case "analysis":
-        return renderAnalysisTab();
-      default:
-        return <div>Invalid tab</div>;
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => `Score: ${context.raw.toFixed(2)}`
+        }
+      }
     }
   };
 
-  // Tab configuration for dynamic tabs
-  const tabs = [
-    { id: "config", label: "Configuration" },
-    { id: "file", label: "File Details" },
-    { id: "analysis", label: "Analysis Results" },
-  ];
+  const styles = {
+    container: {
+      fontFamily: 'Arial, sans-serif',
+      maxWidth: '1000px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#1a202c',
+      borderRadius: '8px',
+      color: '#e2e8f0',
+      width: '100%',
+      height: '100%',
+      overflowY: 'auto',
+      
+    },
+    header: { marginBottom: '20px', textAlign: 'center' },
+    title: { fontSize: '24px', color: '#f7fafc', marginBottom: '5px' },
+    subtitle: { fontSize: '16px', color: '#a0aec0' },
+    prompt: {
+      backgroundColor: '#2d3748',
+      padding: '10px 15px',
+      borderRadius: '5px',
+      marginBottom: '20px',
+      fontStyle: 'italic',
+      fontSize: '16px'
+    },
+    tabContainer: {
+      display: 'flex',
+      gap: '10px',
+      borderBottom: '1px solid #4a5568',
+      marginBottom: '20px'
+    },
+    tab: {
+      padding: '10px 20px',
+      cursor: 'pointer',
+      borderRadius: '5px 5px 0 0',
+      fontWeight: '500',
+      backgroundColor: '#2d3748',
+      border: '1px solid #4a5568',
+      borderBottom: 'none',
+      color: '#cbd5e0'
+    },
+    activeTab: {
+      backgroundColor: '#1a202c',
+      borderTop: '2px solid #63b3ed',
+      position: 'relative',
+      top: '1px'
+    },
+    contentContainer: {
+      backgroundColor: '#2d3748',
+      padding: '20px',
+      borderRadius: '5px'
+    },
+    scoreHeader: {
+      fontSize: '18px',
+      marginBottom: '15px',
+      fontWeight: '500',
+      color: '#e2e8f0'
+    },
+    summaryBox: {
+      backgroundColor: '#1e293b',
+      padding: '15px',
+      borderRadius: '5px',
+      marginBottom: '20px',
+      borderLeft: '4px solid #63b3ed'
+    },
+    scoreGauge: {
+      height: '300px',
+      marginBottom: '30px'
+    },
+    grid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+      gap: '15px'
+    },
+    agentBox: {
+      backgroundColor: '#1a202c',
+      border: '1px solid #4a5568',
+      padding: '15px',
+      borderRadius: '5px'
+    },
+    agentTitle: {
+      fontSize: '16px',
+      fontWeight: '500',
+      marginBottom: '8px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      color: '#cbd5e0'
+    },
+    agentContent: { fontSize: '14px', lineHeight: '1.5', color: '#a0aec0' },
+    scoreValue: {
+      display: 'inline-block',
+      padding: '3px 8px',
+      borderRadius: '3px',
+      fontWeight: '500',
+      fontSize: '14px',
+      marginLeft: '10px'
+    },
+    messageContainer: {
+      marginBottom: '15px',
+      padding: '12px',
+      backgroundColor: '#1e293b',
+      borderRadius: '5px',
+      border: '1px solid #4a5568'
+    },
+    messageAgent: {
+      fontWeight: '500',
+      color: '#63b3ed',
+      marginBottom: '5px'
+    },
+    messageContent: { fontSize: '14px', lineHeight: '1.5', color: '#cbd5e0' },
+    metadataGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+      gap: '10px'
+    },
+    metadataItem: {
+      backgroundColor: '#1e293b',
+      padding: '10px',
+      borderRadius: '5px',
+      border: '1px solid #4a5568'
+    },
+    metadataTitle: {
+      fontSize: '14px',
+      fontWeight: '500',
+      color: '#cbd5e0',
+      marginBottom: '5px'
+    },
+    metadataValue: { fontSize: '16px', color: '#edf2f7' }
+  };
+
+  const formatScore = (score) => {
+    const scoreNum = parseFloat(score);
+    const color = scoreNum < 0.4 ? '#e53e3e' : scoreNum < 0.7 ? '#ecc94b' : '#38a169';
+    return (
+      <span style={{ ...styles.scoreValue, backgroundColor: color + '33', color }}>
+        {scoreNum.toFixed(2)}
+      </span>
+    );
+  };
+
+  const renderAnalysisTab = () => (
+    <div>
+      <h3 style={styles.scoreHeader}>Overall Score: {formatScore(analysis.reporting_agent.average_score)}</h3>
+      <div style={styles.summaryBox}>
+        <p><strong>Verdict:</strong> {analysis.reporting_agent.verdict}</p>
+        <p><strong>Summary:</strong> {analysis.reporting_agent.summary}</p>
+      </div>
+      <h3 style={styles.scoreHeader}>Score Breakdown</h3>
+      <div style={styles.scoreGauge}>
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+      <h3 style={styles.scoreHeader}>Detailed Analysis</h3>
+      <div style={styles.grid}>
+        {Object.entries(analysis).map(([agentName, agentData]) => {
+          if (["reasoning_agent", "reporting_agent"].includes(agentName)) return null;
+          const displayName = agentName.replace(/_agent$/, '')
+            .split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          const score = analysis.reporting_agent.scorecard[agentName.replace(/_agent$/, '')];
+          return (
+            <div key={agentName} style={styles.agentBox}>
+              <div style={styles.agentTitle}>
+                {displayName} {score !== undefined && formatScore(score)}
+              </div>
+              <div style={styles.agentContent}>{agentData.summary??"This agentnt doesnt provide any summary"}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderConversationsTab = () => (
+    <div>
+      <h3 style={styles.scoreHeader}>Agent Conversations</h3>
+      {conversations.messages.map((msg, idx) => (
+        <div key={idx} style={styles.messageContainer}>
+          <div style={styles.messageAgent}>
+            {msg.agent.replace(/_agent$/, '').split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+          </div>
+          <div style={styles.messageContent}>{msg.content}</div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderMetadataTab = () => {
+    const { analysis, conversations, ...metadata } = response;
+  
+    const renderValue = (value) => {
+      if (Array.isArray(value)) {
+        return (
+          <ul style={{ margin: 0, paddingLeft: '1rem', overflowWrap: 'anywhere' }}>
+            {value.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        );
+      } else if (typeof value === 'object' && value !== null) {
+        return (
+          <div style={{ paddingLeft: '0.5rem' }}>
+            {Object.entries(value).map(([k, v]) => (
+              <div key={k} style={{ marginBottom: '0.25rem', overflowWrap: 'anywhere' }}>
+                <strong>{k}:</strong> {Array.isArray(v) ? renderValue(v) : String(v)}
+              </div>
+            ))}
+          </div>
+        );
+      } else {
+        return (
+          <span style={{ wordWrap: 'break-word', overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>
+            {String(value)}
+          </span>
+        );
+      }
+    };
+  
+    return (
+      <div>
+        <h3 style={styles.scoreHeader}>Video Metadata</h3>
+        <div style={styles.metadataGrid}>
+          {Object.entries(metadata).map(([key, value]) => (
+            <div key={key} style={{ ...styles.metadataItem, maxWidth: '100%', overflowWrap: 'anywhere' }}>
+              <div style={{ ...styles.metadataTitle, overflowWrap: 'anywhere' }}>{key}</div>
+              <div style={{ ...styles.metadataValue, overflowWrap: 'anywhere' }}>
+                {renderValue(value)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
 
   return (
-    <div className="result-container">
-      <div className="tabs">
-        {tabs.map((tabItem) => (
-          <button
-            key={tabItem.id}
-            onClick={() => setTab(tabItem.id)}
-            className={`tab ${tab === tabItem.id ? "active" : ""}`}
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <h1 style={styles.title}>Video Analysis Dashboard</h1>
+        <p style={styles.subtitle}>Review AI-generated insights from the video.</p>
+      </div>
+      <div style={styles.prompt}>Prompt: {prompt}</div>
+      <div style={styles.tabContainer}>
+        {["analysis", "conversations", "metadata"].map(tab => (
+          <div
+            key={tab}
+            style={{
+              ...styles.tab,
+              ...(activeTab === tab ? styles.activeTab : {})
+            }}
+            onClick={() => setActiveTab(tab)}
           >
-            {tabItem.label}
-          </button>
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </div>
         ))}
       </div>
-      <button
-        onClick={() => window.location.reload()}
-        style={{
-          float: "right",
-          position: "relative",
-          top: "0px",
-          right: "0px",
-        }}
-      >
-        home
-      </button>
-      <div className="tab-content">{renderTab()}</div>
-      <style jsx>{`
-        .result-container {
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-            Roboto, sans-serif;
-          max-width: 900px;
-          margin: 0 auto;
-          background-color: #ffffff;
-          border-radius: 8px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-          overflow: hidden;
-        }
-
-        .tabs {
-          display: flex;
-          border-bottom: 1px solid #e5e7eb;
-          background-color: #f9fafb;
-        }
-
-        .tab {
-          padding: 16px 24px;
-          border: none;
-          background: none;
-          font-size: 15px;
-          font-weight: 500;
-          color: #6b7280;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          position: relative;
-        }
-
-        .tab:hover {
-          color: #111827;
-          background-color: rgba(0, 0, 0, 0.02);
-        }
-
-        .tab.active {
-          color: #1e40af;
-          font-weight: 600;
-        }
-
-        .tab.active::after {
-          content: "";
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background-color: #1e40af;
-        }
-
-        .tab-content {
-          padding: 24px;
-        }
-
-        .content-container {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-        }
-
-        .section {
-          margin-bottom: 24px;
-        }
-
-        .section-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 16px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #f3f4f6;
-        }
-
-        .parameter-grid,
-        .file-grid,
-        .analysis-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-        }
-
-        .parameter-item,
-        .file-item {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .parameter-label,
-        .file-label {
-          font-size: 14px;
-          font-weight: 500;
-          color: #6b7280;
-        }
-
-        .parameter-value,
-        .file-value {
-          font-size: 15px;
-          color: #111827;
-          word-break: break-word;
-        }
-
-        .criteria-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 20px;
-        }
-
-        .criteria-item {
-          border: 1px solid #f3f4f6;
-          border-radius: 6px;
-          padding: 16px;
-          background-color: #fafafa;
-        }
-
-        .criteria-name {
-          font-size: 16px;
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 8px;
-        }
-
-        .agent-list {
-          list-style-type: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .agent-list li {
-          padding: 6px 0;
-          font-size: 14px;
-          color: #4b5563;
-          border-bottom: 1px dashed #e5e7eb;
-        }
-
-        .agent-list li:last-child {
-          border-bottom: none;
-        }
-
-        .chart-container {
-          height: 400px;
-          margin-bottom: 32px;
-        }
-
-        .analysis-item {
-          border: 1px solid #f3f4f6;
-          border-radius: 6px;
-          padding: 16px;
-          background-color: #fafafa;
-        }
-
-        .analysis-name {
-          font-size: 16px;
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 12px;
-        }
-
-        .analysis-score {
-          position: relative;
-          height: 24px;
-          background-color: #e5e7eb;
-          border-radius: 12px;
-          overflow: hidden;
-        }
-
-        .score-bar {
-          height: 100%;
-          border-radius: 12px;
-          transition: width 0.5s ease;
-        }
-
-        .score-value {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: 14px;
-          font-weight: 600;
-          color: #fff;
-          text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .verdict-section {
-          background-color: #f9fafb;
-          border-radius: 6px;
-          padding: 16px;
-        }
-
-        .verdict-content {
-          background-color: white;
-          border-radius: 6px;
-          padding: 16px;
-          border: 1px solid #e5e7eb;
-        }
-
-        .verdict-text {
-          font-size: 15px;
-          line-height: 1.6;
-          color: #374151;
-        }
-
-        .verdict-highlight {
-          font-weight: 600;
-          color: #1e40af;
-        }
-      `}</style>
+      <div style={styles.contentContainer}>
+        {activeTab === "analysis" && renderAnalysisTab()}
+        {activeTab === "conversations" && renderConversationsTab()}
+        {activeTab === "metadata" && renderMetadataTab()}
+      </div>
     </div>
   );
 };
