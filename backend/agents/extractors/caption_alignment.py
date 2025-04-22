@@ -1,13 +1,20 @@
-# agents/extractors/caption_alignment_agent.py
-
 from data.Config import config
-from collections import Counter
 from utils.constant import STOPWORDS
+from sentence_transformers import SentenceTransformer, util
+
 agent_manifest = {
     "agent_name": "caption_alignment_agent",
-    "purpose": "Measures how well frame-level captions reflect the prompt.",
+    "purpose": "Measures how well frame-level captions reflect the prompt using semantic similarity.",
 }
 
+sentence_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+def tokenize(text: str):
+    return [
+        word.strip(".,!?").lower()
+        for word in text.split()
+        if word.isalpha() and word.lower() not in STOPWORDS
+    ]
 
 async def run() -> None:
     semantic_tags = config.analysis.perception_agent.get("semantic_tags", [])
@@ -16,26 +23,32 @@ async def run() -> None:
     if not semantic_tags or not prompt:
         raise ValueError("Missing semantic tags or prompt.")
 
-    # -- Step 1: Extract clean words from prompt (minus stopwords)
-    prompt_words = set([
-        word.strip(",.") for word in prompt.split()
-        if word not in STOPWORDS
-    ])
+    # Step 1: Clean prompt words
+    prompt_words = tokenize(prompt)
+    if not prompt_words:
+        raise ValueError("No usable words in prompt.")
 
-    # -- Step 2: Extract clean words from all BLIP captions
+    # Step 2: Clean caption words
     tag_words = []
     for tags in semantic_tags:
-        caption = tags[0].lower()
-        tag_words.extend([
-            word.strip(",.") for word in caption.split()
-            if word not in STOPWORDS
-        ])
+        caption = tags[0]
+        tag_words.extend(tokenize(caption))
+    tag_words = list(set(tag_words))  # remove duplicates
 
-    tag_counter = Counter(tag_words)
+    if not tag_words:
+        raise ValueError("No usable words in captions.")
 
-    # -- Step 3: Match only prompt → semantic_tags
-    matched_prompt_words = [word for word in prompt_words if word in tag_counter]
-    match_ratio = round(len(matched_prompt_words) / len(prompt_words), 4) if prompt_words else 0.0
+    # Step 3: Semantic matching
+    matched_words = []
+    prompt_embeddings = sentence_model.encode(prompt_words, convert_to_tensor=True)
+    tag_embeddings = sentence_model.encode(tag_words, convert_to_tensor=True)
+
+    for i, p_word in enumerate(prompt_words):
+        sims = util.cos_sim(prompt_embeddings[i], tag_embeddings)
+        if sims.max().item() > 0.7:
+            matched_words.append(p_word)
+
+    match_ratio = round(len(matched_words) / len(prompt_words), 4)
 
     summary = (
         "Captions strongly reflect the prompt." if match_ratio > 0.75 else
@@ -44,10 +57,8 @@ async def run() -> None:
     )
 
     config.analysis.caption_alignment_agent = {
-        "filtered_prompt_words": list(prompt_words),
-        "matched_words": matched_prompt_words,
+        "filtered_prompt_words": prompt_words,
+        "matched_words": matched_words,
         "match_ratio": match_ratio,
         "summary": summary
     }
-
-    # print(f"[caption_alignment_agent] {config.analysis.caption_alignment_agent}")
