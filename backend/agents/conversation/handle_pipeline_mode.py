@@ -50,27 +50,7 @@ Meta_agent_conversations = {
 async def handle_primary_pipeline_mode(pipeline_mode: str, conversation_history: str) -> str:
     
 
-    if pipeline_mode == "hybrid":
-        # Step 1: Run ingestion → perception (sequential)
-        for agent_name in ["video_ingestion_agent", "perception_agent"]:
-            conversation_history = await Primary_agent_conversations[agent_name](conversation_history)
-
-        # Step 2: Run semantic + temporal in parallel
-        async def run_dual(name):
-            return await Primary_agent_conversations[name](conversation_history)
-
-        semantic_task = run_dual("semantic_analysis_agent")
-        temporal_task = run_dual("temporal_analysis_agent")
-        semantic_out, temporal_out = await asyncio.gather(semantic_task, temporal_task)
-
-        conversation_history += semantic_out + temporal_out
-
-        # Step 3: dynamics (depends on temporal), generalization (depends on semantic)
-        for agent_name in ["dynamics_robustness_agent", "generalization_agent"]:
-            conversation_history = await Primary_agent_conversations[agent_name](conversation_history)
-
-    # Optional: run reasoning agent after all (if defined)
-    elif pipeline_mode == "parallel":
+    if pipeline_mode == "parallel":
 
         async def run_agent(agent_name, func):
             nonlocal conversation_history
