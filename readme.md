@@ -1,5 +1,3 @@
-## 🚀 Running the Project
-
 ### 🐳 Option 1: Run with Docker
 
 1. **Ensure Docker Desktop is running** on your system.
@@ -51,3 +49,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 These configuration should work fine for windows .Project is availiable on localhost:5173
 After project is running succesfully here is a demo on how to use the project 
 
+```https://drive.google.com/file/d/1IB1yvrUvMeyOBmD-2i4B9xy2PJ6NdC9j/view?usp=sharing```
+
+
+Architecture is in root directory
