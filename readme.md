@@ -1,7 +1,3 @@
-Here’s the **updated and complete instruction** to run your project using Docker or manually (for both frontend and backend):
-
----
-
 ## 🚀 Running the Project
 
 ### 🐳 Option 1: Run with Docker
@@ -52,4 +48,6 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ---
 
 
-These configuration should work fine for windows
+These configuration should work fine for windows .Project is availiable on localhost:5173
+After project is running succesfully here is a demo on how to use the project 
+
