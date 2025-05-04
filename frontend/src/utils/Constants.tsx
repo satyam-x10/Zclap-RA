@@ -1,4 +1,4 @@
-export const PIPELINE_MODES = [ "parallel", "sequential"];
+export const PIPELINE_MODES = ["sequential"];
 export const REPORT_FORMATS = ["summary", "detailed", "diagnostic"];
 
 export const DefaultEvaluationCriteria = (fileData) => {
